@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -81,9 +83,9 @@ fun MatchScreen(userId: String, navController: NavController) {
 
     val contacts by viewModel.contacts.collectAsState()
     val matchResult by viewModel.matchResult.collectAsState()
-    var showDialog by remember { mutableStateOf(false) }
+    var showDialog by rememberSaveable { mutableStateOf(false) }
 
-    var showGenreDialog by remember { mutableStateOf(false) }
+    var showGenreDialog by rememberSaveable { mutableStateOf(false) }
 
     var selectedGenres by remember { mutableStateOf<List<String>>(emptyList()) }
 
@@ -335,7 +337,8 @@ fun MatchResultDialog(
                 Text(text = stringResource(R.string.add_to_contacts),
                     color = MaterialTheme.colorScheme.background)
             }
-        }
+        },
+        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
     )
 }
 
@@ -414,7 +417,8 @@ fun GroupMatchResultDialog(
                 Text(text = stringResource(R.string.ok),
                     color = MaterialTheme.colorScheme.background)
             }
-        }
+        },
+        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
     )
 }
 
@@ -470,7 +474,8 @@ fun MultiContactSelectionDialog(
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.cancel))
             }
-        }
+        },
+        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
     )
 }
 
@@ -541,7 +546,8 @@ fun GenreSelectionDialog(
                 Text(text = stringResource(R.string.cancel),
                     color = MaterialTheme.colorScheme.background)
             }
-        }
+        },
+        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
     )
 }
 

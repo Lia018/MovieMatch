@@ -37,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.edit
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -85,8 +87,8 @@ fun EditProfileScreen(
     val showDelete by viewModel.showDeleteDialog.collectAsState()
     val showClear by viewModel.showClearDataDialog.collectAsState()
 
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    var showClearDataDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+    var showClearDataDialog by rememberSaveable { mutableStateOf(false) }
 
     val backgroundColor by animateColorAsState(targetValue = MaterialTheme.colorScheme.background)
     //val textColor by animateColorAsState(targetValue = MaterialTheme.colorScheme.onPrimary)
@@ -295,7 +297,8 @@ fun EditProfileScreen(
             text = { Text(stringResource(R.string.confirm_delete_account_msg)) },
             confirmButton = {
                 TextButton(onClick = {
-                    viewModel.showDeleteDialog.value = false
+                    //viewModel.showDeleteDialog.value = false
+                    showDeleteDialog = false
                     viewModel.deleteUser(
                         clearPrefs = {
                             context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE).edit { clear() }
@@ -312,45 +315,53 @@ fun EditProfileScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { viewModel.showDeleteDialog.value = false }) {
+                /*TextButton(onClick = { viewModel.showDeleteDialog.value = false }) {
+                    Text(text = stringResource(R.string.no_keep),
+                        color = MaterialTheme.colorScheme.background)
+                }*/
+                TextButton(onClick = { showDeleteDialog = false }) {
                     Text(text = stringResource(R.string.no_keep),
                         color = MaterialTheme.colorScheme.background)
                 }
-            }
-        )
-    }
+    },
+    properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+    )
+}
 
-    if (showClearDataDialog) {
-        AlertDialog(
-            onDismissRequest = { showClearDataDialog = false },
-            title = { Text(stringResource(R.string.clear_data_title)) },
-            text = { Text(stringResource(R.string.clear_data_msg)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.showClearDataDialog.value = false
-                    viewModel.clearLoginData(
-                        clearPrefs = {
-                            context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE).edit { clear() }
-                        },
-                        onComplete = {
-                            navController.navigate(NavRoute.Login.route) {
-                                popUpTo(0) { inclusive = true }
-                            }
+if (showClearDataDialog) {
+    AlertDialog(
+        onDismissRequest = { showClearDataDialog = false },
+        title = { Text(stringResource(R.string.clear_data_title)) },
+        text = { Text(stringResource(R.string.clear_data_msg)) },
+        confirmButton = {
+            TextButton(onClick = {
+                //viewModel.showClearDataDialog.value = false
+                showClearDataDialog = false
+                viewModel.clearLoginData(
+                    clearPrefs = {
+                        context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE).edit { clear() }
+                    },
+                    onComplete = {
+                        navController.navigate(NavRoute.Login.route) {
+                            popUpTo(0) { inclusive = true }
                         }
-                    )
-                }) {
-                    Text(text = stringResource(R.string.yes),
-                        color = MaterialTheme.colorScheme.background)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { viewModel.showClearDataDialog.value = false }) {
-                    Text(text = stringResource(R.string.no),
-                        color = MaterialTheme.colorScheme.background)
-                }
+                    }
+                )
+            }) {
+                Text(text = stringResource(R.string.yes),
+                    color = MaterialTheme.colorScheme.background)
             }
-        )
-    }
+        },
+        dismissButton = {
+            //TextButton(onClick = { viewModel.showClearDataDialog.value = false }) {
+            TextButton(onClick = { showClearDataDialog = false }) {
+                Text(text = stringResource(R.string.no),
+                    color = MaterialTheme.colorScheme.background)
+            }
+        },
+        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+    )
+}
 }
 
 @Composable

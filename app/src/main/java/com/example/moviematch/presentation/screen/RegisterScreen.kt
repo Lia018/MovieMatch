@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,7 +46,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
     val context = LocalContext.current
     val name by viewModel.name.collectAsState()
     val password by viewModel.password.collectAsState()
-    var showPassword by rememberSaveable { mutableStateOf(false) }
+    var showPassword by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.errorMessage.collect { resId ->

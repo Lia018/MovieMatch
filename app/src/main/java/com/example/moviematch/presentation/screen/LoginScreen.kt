@@ -70,8 +70,9 @@ fun LoginScreen(
 
     var showPassword by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
-    var showForgotDialog by remember { mutableStateOf(false) }
-    var showResetDialog by remember { mutableStateOf(false) }
+
+    var showForgotDialog by rememberSaveable { mutableStateOf(false) }
+    var showResetDialog by rememberSaveable { mutableStateOf(false) }
 
     var showRememberDialog by remember { mutableStateOf(false) }
     var pendingUserId by remember { mutableStateOf<String?>(null) }
@@ -378,7 +379,8 @@ fun ForgotPasswordDialog(onDismiss: () -> Unit, onSendCode: (String) -> Unit) {
                     text = stringResource(R.string.cancel),
                     color = MaterialTheme.colorScheme.background)
             }
-        }
+        },
+        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
     )
 }
 

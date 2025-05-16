@@ -28,6 +28,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,9 +61,9 @@ fun ContactsScreen(userId: String, navController: NavController) {
     val editedName by viewModel.editedName.collectAsState()
 
     val showInitialDialog = remember { derivedStateOf { selectedContact != null } }
-    var showActionDialog by remember { mutableStateOf(false) }
-    var showEditDialog by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showActionDialog by rememberSaveable { mutableStateOf(false) }
+    var showEditDialog by rememberSaveable { mutableStateOf(false) }
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadContacts()
@@ -153,7 +154,8 @@ fun ContactsScreen(userId: String, navController: NavController) {
                     Text(text = stringResource(R.string.cancel),
                         color = MaterialTheme.colorScheme.background)
                 }
-            }
+            },
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
         )
     }
 
@@ -179,11 +181,12 @@ fun ContactsScreen(userId: String, navController: NavController) {
                     Text(text = stringResource(R.string.delete),
                         color = MaterialTheme.colorScheme.background)
                 }
-            }
+            },
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
         )
     }
 
-    if (showEditDialog) {
+    /*if (showEditDialog) {
         AlertDialog(
             onDismissRequest = { showEditDialog = false },
             title = { Text(stringResource(R.string.edit_contact)) },
@@ -214,10 +217,53 @@ fun ContactsScreen(userId: String, navController: NavController) {
                         color = MaterialTheme.colorScheme.background)
                 }
             },
-            properties = DialogProperties(
-                dismissOnBackPress = false,
-                dismissOnClickOutside = false
-            )
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+        )
+    }*/
+
+    if (showEditDialog) {
+        var tempName by rememberSaveable(selectedContact?.contactId) {
+            mutableStateOf(selectedContact?.displayName ?: "")
+        }
+
+        AlertDialog(
+            onDismissRequest = { showEditDialog = false },
+            title = { Text(stringResource(R.string.edit_contact)) },
+            text = {
+                Column {
+                    Text(stringResource(R.string.contact_id_label, selectedContact?.contactId ?: ""))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = tempName,
+                        onValueChange = { tempName = it },
+                        label = { Text(stringResource(R.string.contact_name)) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.editedName.value = tempName
+                    viewModel.saveEditedName()
+                    showEditDialog = false
+                }) {
+                    Text(
+                        text = stringResource(R.string.save),
+                        color = MaterialTheme.colorScheme.background
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showEditDialog = false
+                }) {
+                    Text(
+                        text = stringResource(R.string.cancel),
+                        color = MaterialTheme.colorScheme.background
+                    )
+                }
+            },
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
         )
     }
 
@@ -243,10 +289,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
                         color = MaterialTheme.colorScheme.background)
                 }
             },
-            properties = DialogProperties(
-                dismissOnBackPress = false,
-                dismissOnClickOutside = false
-            )
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
         )
     }
 }
