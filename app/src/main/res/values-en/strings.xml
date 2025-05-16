@@ -1,0 +1,107 @@
+<resources>
+    //main
+    <string name="app_name">🎬 Movie Matchmaker</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="language_sk">🇸🇰 Slovak</string>
+    <string name="language_en">🇬🇧 English</string>
+    //register
+    <string name="enter_name">Enter name</string>
+    <string name="enter_password">Enter password</string>
+    <string name="show_password">Show password</string>
+    <string name="min_length_error">Name and password must be at least 3 characters long</string>
+    <string name="name_exists">Name already exists, please choose another one</string>
+    <string name="already_have_account">Already have an account? Log in</string>
+    <string name="registered_id">Registered! Your ID: %1$s</string>
+    //login
+    <string name="enter_id">Enter ID</string>
+    <string name="fill_in_login_details">Fill in your login details</string>
+    <string name="invalid_user_id_length">Invalid ID format</string>
+    <string name="invalid_login">Incorrect ID or password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="create_account">Not registered yet? Create an account</string>
+    <string name="remember_login_title">Remember login?</string>
+    <string name="remember_login_msg">Do you want to remember your login details for future use?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="welcome_back">Welcome back!</string>
+    <string name="forgot_password_title">Password recovery</string>
+    <string name="forgot_username_label">Enter username</string>
+    <string name="username_required">Please fill in the name</string>
+    <string name="user_not_found">No user found with this name</string>
+    <string name="simulated_sms">Verification code: %1$s (SMS simulation)</string>
+    <string name="send_code">Send code</string>
+    <string name="verification_code">Verification code</string>
+    <string name="new_password">New password</string>
+    <string name="invalid_code">Invalid code</string>
+    <string name="password_too_short">Password must be at least 3 characters long</string>
+    <string name="same_password">New password cannot be the same as the old one</string>
+    <string name="password_reset_success">Password has been reset</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    //menu
+    <string name="edit_profile">Edit profile</string>
+    <string name="contacts">Your contacts</string>
+    <string name="edit_preferences">Edit preferences</string>
+    <string name="search_match">Find match</string>
+    <string name="logout">Log out</string>
+    //profile
+
+
+    <string name="name">Your name</string>
+    <string name="name_too_short">Name must be at least 3 characters long</string>
+    <string name="name_not_unique">This name already exists</string>
+    <string name="name_updated">Name updated</string>
+    <string name="save_name">Save name</string>
+    <string name="user_id_label">Your ID</string>
+    <string name="show_id_hold">Show ID</string>
+    <string name="enter_current_password">Current password</string>
+    <string name="enter_new_password">New password</string>
+    <string name="incorrect_password">Incorrect current password</string>
+    <string name="password_same">New password is the same as the old one</string>
+    <string name="password_updated">Password updated</string>
+    <string name="change_password">Change password</string>
+    <string name="choose_language">Language</string>
+    <string name="theme">Theme</string>
+    <string name="clear_login_data">Clear login data</string>
+    <string name="no_login_data">No login data saved</string>
+    <string name="clear_data_title">Clear saved data?</string>
+    <string name="clear_data_msg">Are you sure you want to delete your saved login data?</string>
+    <string name="login_data_deleted">Saved login data has been deleted. You have been logged out</string>
+    <string name="delete_account">Delete account</string>
+    <string name="confirm_delete_account_title">Delete account?</string>
+    <string name="confirm_delete_account_msg">Are you sure you want to delete your account? This action cannot be undone</string>
+    <string name="yes_delete">Yes, delete</string>
+    <string name="no_keep">No, keep</string>
+    <string name="account_deleted">Account deleted</string>
+    <string name="back_to_menu">Back to menu</string>
+    //contacts
+    <string name="enter_user_id">Enter user ID</string>
+    <string name="enter_id_first">Please enter an ID first</string>
+    <string name="add_contact">Add contact</string>
+    <string name="contact_exists">You\'ve already added this contact</string>
+    <string name="cannot_add_self">You cannot add yourself</string>
+    <string name="contact_title">Contact %1$s</string>
+    <string name="contact_selected">What would you like to do with contact %1$s?</string>
+    <string name="edit_or_delete">Edit/Delete</string>
+    <string name="choose_action">Choose action</string>
+    <string name="edit_or_delete_question">Edit or delete contact</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="delete_contact">Delete contact</string>
+    <string name="confirm_delete_contact">Are you sure you want to delete contact %1$s?</string>
+    <string name="contact_deleted">Contact deleted</string>
+    <string name="edit_contact">Edit contact</string>
+    <string name="contact_id_label">ID: %1$s</string>
+    <string name="save">Save</string>
+    <string name="contact_name">Contact name</string>
+    <string name="name_saved">Contact name saved</string>
+    //preferences
+    <string name="genre">Genre</string>
+    <string name="save_preferences">Save preferences</string>
+    <string name="preferences_updated">Preferences updated!</string>
+    //match
+    <string name="find_match">Find match</string>
+
+
+</resources>

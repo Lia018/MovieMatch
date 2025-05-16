@@ -1,0 +1,171 @@
+<resources>
+    //main
+    <string name="app_name">🎬 Movie Matchmaker</string>
+    <string name="login">Prihlásiť</string>
+    <string name="register">Registrovať</string>
+    <string name="language_sk">🇸🇰 Slovenčina</string>
+    <string name="language_en">🇬🇧 Angličtina</string>
+    //register
+    <string name="enter_name">Zadajte meno</string>
+    <string name="enter_password">Zadajte heslo</string>
+    <string name="show_password">Zobraziť heslo</string>
+    <string name="min_length_error">Meno a heslo musia mať aspoň 3 znaky</string>
+    <string name="name_exists">Meno už existuje, vyberte iné</string>
+    <string name="already_have_account">Už máte účet? Prihláste sa</string>
+    <string name="registered_id">Registrované! Vaše ID: %1$s</string>
+    //login
+    <string name="enter_id">Zadajte ID</string>
+    <string name="fill_in_login_details">Vyplňte svoje prihlasovacie údaje</string>
+    <string name="invalid_user_id_length">Neplatný formát ID</string>
+    <string name="invalid_login">Nesprávne ID alebo heslo</string>
+    <string name="forgot_password">Zabudnuté heslo?</string>
+    <string name="create_account">Nie ste registrovaný? Vytvoriť účet</string>
+    <string name="remember_login_title">Zapamätať prihlásenie?</string>
+    <string name="remember_login_msg">Chcete si zapamätať svoje prihlasovacie údaje pre budúce použitie?</string>
+    <string name="yes">Áno</string>
+    <string name="no">Nie</string>
+    <string name="welcome_back">Vitajte späť!</string>
+    <string name="forgot_password_title">Obnova hesla</string>
+    <string name="forgot_username_label">Zadajte používateľské meno</string>
+    <string name="username_required">Vyplňte meno prosím</string>
+    <string name="user_not_found">Používateľ s týmto menom neexistuje</string>
+    <string name="simulated_sms">Overovací kód: %1$s (simulácia SMS)</string>
+    <string name="send_code">Odoslať kód</string>
+    <string name="verification_code">Overovací kód</string>
+    <string name="new_password">Nové heslo</string>
+    <string name="invalid_code">Nesprávny kód</string>
+    <string name="password_too_short">Heslo musí mať aspoň 3 znaky</string>
+    <string name="same_password">Nové heslo nemôže byť rovnaké ako to staré</string>
+    <string name="password_reset_success">Heslo bolo obnovené</string>
+    <string name="confirm">Potvrdiť</string>
+    <string name="cancel">Zrušiť</string>
+    //menu
+    <string name="edit_profile">Upraviť profil</string>
+    <string name="contacts">Vaše kontakty</string>
+    <string name="edit_preferences">Upraviť preferencie</string>
+    <string name="search_match">Hľadať zhodu</string>
+    <string name="logout">Odhlásiť sa</string>
+    //profile
+    <string name="name">Vaše meno</string>
+    <string name="name_too_short">Meno musí mať aspoň 3 znaky</string>
+    <string name="name_not_unique">Toto meno už existuje</string>
+    <string name="name_updated">Meno aktualizované</string>
+    <string name="save_name">Uložiť meno</string>
+    <string name="user_id_label">Vaše ID</string>
+    <string name="show_id_hold">Zobraziť ID</string>
+    <string name="enter_current_password">Aktuálne heslo</string>
+    <string name="enter_new_password">Nové heslo</string>
+    <string name="incorrect_password">Nesprávne aktuálne heslo</string>
+    <string name="password_same">Nové heslo je rovnaké ako to staré</string>
+    <string name="password_updated">Heslo zmenené</string>
+    <string name="change_password">Zmeniť heslo</string>
+    <string name="choose_language">Jazyk</string>
+    <string name="theme">Téma</string>
+    <string name="clear_login_data">Vymazať prihlasovacie údaje</string>
+
+    <string name="no_login_data">Nemáte uložené prihlasovacie údaje</string>
+
+    <string name="clear_data_title">Vymazať uložené údaje?</string>
+    <string name="clear_data_msg">Naozaj chcete vymazať svoje uložené prihlasovacie údaje?</string>
+    <string name="login_data_deleted">Uložené prihlasovacie údaje boli vymazané. Boli ste odhlásený</string>
+    <string name="delete_account">Odstrániť účet</string>
+    <string name="confirm_delete_account_title">Odstrániť účet?</string>
+    <string name="confirm_delete_account_msg">Naozaj chcete odstrániť svoj účet? Táto akcia je nezvratná</string>
+    <string name="yes_delete">Áno, odstrániť</string>
+    <string name="no_keep">Nie, ponechať</string>
+    <string name="account_deleted">Účet bol odstránený</string>
+    <string name="back_to_menu">Späť do menu</string>
+    //contacts
+    <string name="enter_user_id">Zadajte ID používateľa</string>
+
+    //neplatné ID check
+
+    <string name="enter_id_first">Najprv zadajte ID</string>
+    <string name="add_contact">Pridať kontakt</string>
+    <string name="contact_exists">Tento kontakt už máte</string>
+    <string name="cannot_add_self">Nemôžete si pridať samého seba</string>
+    <string name="contact_title">Kontakt %1$s</string>
+    <string name="contact_selected">Čo si želáte urobiť s kontaktom %1$s?</string>
+    <string name="edit_or_delete">Upraviť/Odstrániť</string>
+    <string name="choose_action">Zvoľte akciu</string>
+    <string name="edit_or_delete_question">Upraviť alebo odstrániť kontakt</string>
+    <string name="edit">Upraviť</string>
+    <string name="delete">Odstrániť</string>
+    <string name="delete_contact">Odstrániť kontakt</string>
+    <string name="confirm_delete_contact">Naozaj chcete odstrániť kontakt %1$s?</string>
+    <string name="contact_deleted">Kontakt odstránený</string>
+    <string name="edit_contact">Upraviť kontakt</string>
+    <string name="contact_id_label">ID: %1$s</string>
+    <string name="save">Uložiť</string>
+    <string name="contact_name">Meno kontaktu</string>
+    <string name="name_saved">Meno kontaktu uložené</string>
+    //preferences
+    <string name="genre">Žáner</string>
+    <string name="save_preferences">Uložiť preferencie</string>
+    <string name="preferences_updated">Preferencie aktualizované!</string>
+    //match
+    <string name="find_match">Nájsť zhodu</string>
+
+
+
+    <string name="no_preferences">Vyberte filmy, ktoré si chcete pozrieť</string>
+
+    <string name="invalid_user_id">Neplatné ID</string>
+    <string name="other_user_no_preferences_generic">Zvolený používateľ nemá preferencie</string>
+
+    <string name="find_match_with_contact">Nájsť zhodu s kontaktom</string>
+    <string name="select_contacts_title">Vyberte kontakty pre hľadanie</string>
+    <string name="no_contacts_selected">Nevybrali ste žiadne kontakty</string>
+    <string name="no_contacts_have_preferences">Žiadny z vybraných kontaktov nemá filmy v preferenciách</string>
+    <string name="other_user_no_preferences_named">Používateľ %1$s nemá filmy v preferenciách</string>
+    <string name="no_group_match">Žiadna skupinová zhoda</string>
+
+
+
+    <string name="target_user_not_in_database">HUH</string>
+    <string name="genre_feeling_prompt">Na aký žáner sa dnes cítite?</string>
+    <string name="select_genres_title">HUH</string>
+    <string name="genres_selected">HUH</string>
+    <string name="all_preferences">ALL</string>
+    <string name="shake">ALL</string>
+    <string name="highlighted_movie_format">⭐ %1$s ⭐</string>
+    <string name="other_user_no_preferences_in_selected_genres_generic">Tento používateľ nemá preferencie v zvolených žánroch.</string>
+    <string name="no_preferences_in_selected_genres">Nemáš preferencie v zvolených žánroch.</string>
+    <string name="no_genre_match">žiadne preferencie v zvolených žánroch</string>
+
+    <string name="other_user_no_preferences_in_selected_genres">%1$s nemá preferencie v zvolených žánroch.</string>
+
+
+
+
+
+
+    <string name="no_common_movies_generic">Žiadne spoločné filmy</string>
+    <string name="already_in_contacts">Používateľ už je v kontaktoch</string>
+    <string name="added_to_contacts">Používateľ pridaný do kontaktov</string>
+    <string name="no_contacts_found">Nemáte žiadne uložené kontakty</string>
+    <string name="group_match_found">Spoločné filmy:\n%1$s</string>
+    <string name="add_to_contacts">Pridať do kontaktov</string>
+    <string name="reset_password_title">Zmena hesla</string>
+    <string name="password_recovery">Obnova hesla</string>
+    <string name="enter_username">Zadajte meno</string>
+    <string name="reset_password">Zmena hesla</string>
+    <string name="enter_code_and_new_password">Zadajte kód a nové heslo</string>
+    <string name="cannot_match_self">Nemôžete hľadať zhodu so sebou samým</string>
+    <string name="match_found">Spoločné filmy s používateľom %1$s:\n\n%2$s</string>
+    <string name="no_common_movies">Žiadne spoločné filmy s používateľom %1$s.</string>
+    <string name="match_result">Výsledok zhody</string>
+    <string name="ok">OK</string>
+    <string name="change_password_title">Change Password</string>
+    <string name="code">Code</string>
+    <string name="code_invalid">Invalid code</string>
+    <string name="code_sent">Code sent</string>
+    <string name="enter_code">Enter code</string>
+    <string name="invalid_code_or_password">Invalid code or password</string>
+    <string name="password_changed">Password changed</string>
+    <string name="recover_password_title">Recover Password</string>
+    <string name="same_password_error">Passwords do not match</string>
+    <string name="verification_code_sent">Verification code sent</string>
+
+
+</resources>
