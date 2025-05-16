@@ -144,12 +144,14 @@ fun ContactsScreen(userId: String, navController: NavController) {
             text = { Text(stringResource(R.string.contact_selected, selectedContact?.contactId ?: "")) },
             confirmButton = {
                 TextButton(onClick = { showActionDialog = true }) {
-                    Text(stringResource(R.string.edit_or_delete))
+                    Text(text = stringResource(R.string.edit_or_delete),
+                        color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
                 TextButton(onClick = viewModel::clearDialogs) {
-                    Text(stringResource(R.string.cancel))
+                    Text(text = stringResource(R.string.cancel),
+                        color = MaterialTheme.colorScheme.background)
                 }
             }
         )
@@ -165,7 +167,8 @@ fun ContactsScreen(userId: String, navController: NavController) {
                     showActionDialog = false
                     showEditDialog = true
                 }) {
-                    Text(stringResource(R.string.edit))
+                    Text(text = stringResource(R.string.edit),
+                        color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
@@ -173,7 +176,8 @@ fun ContactsScreen(userId: String, navController: NavController) {
                     showActionDialog = false
                     showDeleteDialog = true
                 }) {
-                    Text(stringResource(R.string.delete))
+                    Text(text = stringResource(R.string.delete),
+                        color = MaterialTheme.colorScheme.background)
                 }
             }
         )
@@ -200,12 +204,14 @@ fun ContactsScreen(userId: String, navController: NavController) {
                     viewModel.saveEditedName()
                     showEditDialog = false
                 }) {
-                    Text(stringResource(R.string.save))
+                    Text(text = stringResource(R.string.save),
+                        color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showEditDialog = false }) {
-                    Text(stringResource(R.string.cancel))
+                    Text(text = stringResource(R.string.cancel),
+                        color = MaterialTheme.colorScheme.background)
                 }
             },
             properties = DialogProperties(
@@ -227,12 +233,14 @@ fun ContactsScreen(userId: String, navController: NavController) {
                     viewModel.deleteSelectedContact()
                     showDeleteDialog = false
                 }) {
-                    Text(stringResource(R.string.yes_delete))
+                    Text(text = stringResource(R.string.yes_delete),
+                        color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text(stringResource(R.string.cancel))
+                    Text(text = stringResource(R.string.cancel),
+                        color = MaterialTheme.colorScheme.background)
                 }
             },
             properties = DialogProperties(

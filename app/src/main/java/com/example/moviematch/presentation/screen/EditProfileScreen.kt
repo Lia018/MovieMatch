@@ -307,12 +307,14 @@ fun EditProfileScreen(
                         }
                     )
                 }) {
-                    Text(stringResource(R.string.yes_delete))
+                    Text(text = stringResource(R.string.yes_delete),
+                        color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.showDeleteDialog.value = false }) {
-                    Text(stringResource(R.string.no_keep))
+                    Text(text = stringResource(R.string.no_keep),
+                        color = MaterialTheme.colorScheme.background)
                 }
             }
         )
@@ -337,12 +339,14 @@ fun EditProfileScreen(
                         }
                     )
                 }) {
-                    Text(stringResource(R.string.yes))
+                    Text(text = stringResource(R.string.yes),
+                        color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.showClearDataDialog.value = false }) {
-                    Text(stringResource(R.string.no))
+                    Text(text = stringResource(R.string.no),
+                        color = MaterialTheme.colorScheme.background)
                 }
             }
         )

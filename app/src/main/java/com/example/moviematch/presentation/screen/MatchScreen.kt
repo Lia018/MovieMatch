@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -148,7 +149,18 @@ fun MatchScreen(userId: String, navController: NavController) {
             onValueChange = { viewModel.inputUserId.value = it },
             label = { Text(stringResource(R.string.enter_user_id)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                focusedTextColor = MaterialTheme.colorScheme.onSecondary,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
+                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary,
+                focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSecondary,
+                cursorColor = MaterialTheme.colorScheme.primary,
+            )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -304,7 +316,8 @@ fun MatchResultDialog(
                         }
                         Text(
                             text = displayText,
-                            color = if (movie == highlightedMovie) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                            color = if (movie == highlightedMovie) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onSecondary,
+                            //color = MaterialTheme.colorScheme.background,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                     }
@@ -313,12 +326,14 @@ fun MatchResultDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.ok))
+                Text(text = stringResource(R.string.ok),
+                    color = MaterialTheme.colorScheme.background)
             }
         },
         dismissButton = {
             TextButton(onClick = onAddToContacts) {
-                Text(stringResource(R.string.add_to_contacts))
+                Text(text = stringResource(R.string.add_to_contacts),
+                    color = MaterialTheme.colorScheme.background)
             }
         }
     )
@@ -373,7 +388,9 @@ fun GroupMatchResultDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.match_result)) },
         text = {
-            Column {
+            Column (
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())) {
                 Text(stringResource(R.string.group_match_found, ""))
                 Spacer(modifier = Modifier.height(8.dp))
                 Column {
@@ -385,7 +402,7 @@ fun GroupMatchResultDialog(
                         }
                         Text(
                             text = displayText,
-                            color = if (movie == highlightedMovie) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                            color = if (movie == highlightedMovie) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onSecondary,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                     }
@@ -394,7 +411,8 @@ fun GroupMatchResultDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.ok))
+                Text(text = stringResource(R.string.ok),
+                    color = MaterialTheme.colorScheme.background)
             }
         }
     )
@@ -413,7 +431,9 @@ fun MultiContactSelectionDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.select_contacts_title)) },
         text = {
-            Column {
+            Column (
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())) {
                 allContacts.forEachIndexed { index, contact ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -512,12 +532,14 @@ fun GenreSelectionDialog(
                     .filter { it != allOptionLabel }
                 onConfirm(selectedGenres)
             }) {
-                Text(stringResource(R.string.confirm))
+                Text(text = stringResource(R.string.confirm),
+                    color = MaterialTheme.colorScheme.background)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(text = stringResource(R.string.cancel),
+                    color = MaterialTheme.colorScheme.background)
             }
         }
     )

@@ -218,16 +218,6 @@ fun LoginScreen(
             )
         }
 
-        if (showError) {
-            Text(
-                text = stringResource(R.string.invalid_login),
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 8.dp)
-            )
-        }
-
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(
@@ -321,7 +311,8 @@ fun LoginScreen(
                         popUpTo(NavRoute.Login.route) { inclusive = true }
                     }
                 }) {
-                    Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(R.string.yes),
+                        color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
@@ -331,7 +322,8 @@ fun LoginScreen(
                         popUpTo(NavRoute.Login.route) { inclusive = true }
                     }
                 }) {
-                    Text(stringResource(R.string.no), color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(R.string.no),
+                        color = MaterialTheme.colorScheme.background)
                 }
             },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -384,7 +376,7 @@ fun ForgotPasswordDialog(onDismiss: () -> Unit, onSendCode: (String) -> Unit) {
             TextButton(onClick = onDismiss) {
                 Text(
                     text = stringResource(R.string.cancel),
-                    color = MaterialTheme.colorScheme.primary)
+                    color = MaterialTheme.colorScheme.background)
             }
         }
     )
@@ -472,12 +464,14 @@ fun ResetPasswordDialog(onDismiss: () -> Unit, onConfirm: (String, String) -> Un
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(code.trim(), newPassword.trim()) }) {
-                Text(stringResource(R.string.confirm))
+                Text(text = stringResource(R.string.confirm),
+                    color = MaterialTheme.colorScheme.background)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(text = stringResource(R.string.cancel),
+                    color = MaterialTheme.colorScheme.background)
             }
         }
     )
