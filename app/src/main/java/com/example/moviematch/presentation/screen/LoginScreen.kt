@@ -60,6 +60,14 @@ fun LoginScreen(
     skipAutoLogin: Boolean = false
 ) {
     val context = LocalContext.current
+    val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+
+    var suppressRememberDialog by rememberSaveable {
+        mutableStateOf(
+            prefs.getBoolean("suppressRememberDialog_${prefillUserId.orEmpty()}", false)
+        )
+    }
+
     val userId by viewModel.userId.collectAsState()
     val password by viewModel.password.collectAsState()
     val loginSuccess by viewModel.loginSuccess.collectAsState()
@@ -78,9 +86,10 @@ fun LoginScreen(
     var pendingUserId by remember { mutableStateOf<String?>(null) }
     var pendingPassword by remember { mutableStateOf<String?>(null) }
 
+    var showRememberOptions by rememberSaveable { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         if (!skipAutoLogin && !isLoginAttemptedAutomatically) {
-            val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
             val storedUserId = prefs.getString("userId", null)
             val storedPassword = prefs.getString("password", null)
             if (!storedUserId.isNullOrBlank() && !storedPassword.isNullOrBlank()) {
@@ -92,12 +101,17 @@ fun LoginScreen(
         } else if (skipAutoLogin && prefillUserId != null) {
             viewModel.onUserIdChange(prefillUserId)
         }
-    }
+        }
+
 
     LaunchedEffect(loginSuccess) {
         loginSuccess?.let { user ->
-            val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
-            if (prefs.getString("userId", null).isNullOrBlank() || prefs.getString("password", null).isNullOrBlank()) {
+            val hasStored = !prefs.getString("userId", null).isNullOrBlank() &&
+                    !prefs.getString("password", null).isNullOrBlank()
+
+            val suppressForThisUser = prefs.getBoolean("suppressRememberDialog_${user.userId}", false)
+
+            if (!hasStored && !suppressForThisUser) {
                 pendingUserId = user.userId
                 pendingPassword = user.password
                 showRememberDialog = true
@@ -113,7 +127,6 @@ fun LoginScreen(
             }
         }
     }
-
 
     LaunchedEffect(Unit) {
         viewModel.errorMessageId.collect {
@@ -131,8 +144,18 @@ fun LoginScreen(
         viewModel.resetSuccess.collect {
             Toast.makeText(context, context.getString(R.string.password_reset_success), Toast.LENGTH_SHORT).show()
             showResetDialog = false
+
+            viewModel.onUserIdChange("")
+            viewModel.onPasswordChange("")
+
+            isLoginAttemptedAutomatically = false
+            prefs.edit {
+                remove("userId")
+                remove("password")
+            }
         }
     }
+
 
     LaunchedEffect(Unit) {
         viewModel.loginError.collect { resId ->
@@ -215,7 +238,7 @@ fun LoginScreen(
                 text = stringResource(R.string.show_password),
                 color = MaterialTheme.colorScheme.onSecondary,
                 modifier = Modifier
-                .clickable { showPassword = !showPassword }
+                    .clickable { showPassword = !showPassword }
             )
         }
 
@@ -286,7 +309,8 @@ fun LoginScreen(
         )
     }
 
-    if (showRememberDialog && pendingUserId != null && pendingPassword != null) {
+    if (showRememberDialog && !suppressRememberDialog && pendingUserId != null && pendingPassword != null) {
+        //if (showRememberDialog && pendingUserId != null && pendingPassword != null) {
         AlertDialog(
             onDismissRequest = { showRememberDialog = false },
             title = {
@@ -318,12 +342,44 @@ fun LoginScreen(
             },
             dismissButton = {
                 TextButton(onClick = {
+                    showRememberDialog = false
+                    showRememberOptions = true
+                }) {
+                    Text(stringResource(R.string.no), color = MaterialTheme.colorScheme.background)
+                }
+
+            },
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+        )
+    }
+
+    if (showRememberOptions) {
+        AlertDialog(
+            onDismissRequest = { showRememberOptions = false },
+            title = { Text(stringResource(R.string.remember_decision_title)) },
+            text = { Text(stringResource(R.string.remember_decision_msg)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    prefs.edit().putBoolean("suppressRememberDialog_${pendingUserId!!}", true).apply()
+                    suppressRememberDialog = true
+                    showRememberOptions = false
                     Toast.makeText(context, context.getString(R.string.welcome_back), Toast.LENGTH_SHORT).show()
                     navController.navigate(NavRoute.Menu.createRoute(pendingUserId!!)) {
                         popUpTo(NavRoute.Login.route) { inclusive = true }
                     }
                 }) {
-                    Text(stringResource(R.string.no),
+                    Text(stringResource(R.string.do_not_ask_again), color = MaterialTheme.colorScheme.background)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showRememberOptions = false
+                    Toast.makeText(context, context.getString(R.string.welcome_back), Toast.LENGTH_SHORT).show()
+                    navController.navigate(NavRoute.Menu.createRoute(pendingUserId!!)) {
+                        popUpTo(NavRoute.Login.route) { inclusive = true }
+                    }
+                }) {
+                    Text(stringResource(R.string.think_about_it),
                         color = MaterialTheme.colorScheme.background)
                 }
             },
@@ -332,6 +388,7 @@ fun LoginScreen(
     }
 
 }
+
 
 @Composable
 fun ForgotPasswordDialog(onDismiss: () -> Unit, onSendCode: (String) -> Unit) {

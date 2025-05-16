@@ -63,7 +63,13 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
             }
 
             val user = userRepository.getUserById(userId)
-            if (user == null || user.password != password) {
+            if (user == null) {
+                emitLoginError(R.string.not_found)
+                _loginSuccess.value = null
+                return@launch
+            }
+
+            if (user.password != password) {
                 emitLoginError(R.string.invalid_login)
                 _loginSuccess.value = null
                 return@launch

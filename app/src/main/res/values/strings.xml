@@ -137,7 +137,12 @@
 
 
 
+    <string name="remember_decision_title">Pamätať údaje?</string>
+    <string name="remember_decision_msg">Nechcete si teraz zapamätať údaje? Môžete zvoliť, aby sme sa už nikdy nepýtali.</string>
+    <string name="do_not_ask_again">Už nezobrazovať</string>
+    <string name="think_about_it">Premyslím si</string>
 
+    <string name="not_found">Používateľ s týmto ID neexistuje</string>
 
 
     <string name="no_common_movies_generic">Žiadne spoločné filmy</string>
