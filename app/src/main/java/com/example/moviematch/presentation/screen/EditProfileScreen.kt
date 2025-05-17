@@ -379,7 +379,7 @@ fun PasswordField(
             label = { Text(label) },
             singleLine = true,
             visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            modifier = Modifier.width(375.dp),
+            modifier = Modifier.width(350.dp),
             colors = customTextFieldColors()
         )
 

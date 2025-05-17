@@ -143,7 +143,8 @@ fun MatchScreen(userId: String, navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .systemBarsPadding()
+            .systemBarsPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         OutlinedTextField(
@@ -151,7 +152,8 @@ fun MatchScreen(userId: String, navController: NavController) {
             onValueChange = { viewModel.inputUserId.value = it },
             label = { Text(stringResource(R.string.enter_user_id)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .width(350.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
                 unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
@@ -169,7 +171,8 @@ fun MatchScreen(userId: String, navController: NavController) {
 
         Button(
             onClick = { viewModel.findDirectMatch(context) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .width(350.dp),
         ) {
             Text(stringResource(R.string.find_match))
         }
@@ -184,7 +187,8 @@ fun MatchScreen(userId: String, navController: NavController) {
                     showDialog = true
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .width(350.dp),
         ) {
             Text(stringResource(R.string.find_match_with_contact))
         }
@@ -204,7 +208,8 @@ fun MatchScreen(userId: String, navController: NavController) {
 
         Button(
             onClick = { showGenreDialog = true },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .width(350.dp),
         ) {
             Text(stringResource(R.string.genre_feeling_prompt))
         }
@@ -230,7 +235,8 @@ fun MatchScreen(userId: String, navController: NavController) {
             onClick = {
                 navController.navigate(NavRoute.Menu.createRoute(userId))
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .width(350.dp),
         ) {
             Text(stringResource(R.string.back_to_menu))
         }
@@ -467,12 +473,14 @@ fun MultiContactSelectionDialog(
 
                 }
             }) {
-                Text(stringResource(R.string.find_match))
+                Text(text = stringResource(R.string.find_match),
+                    color = MaterialTheme.colorScheme.background)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(text = stringResource(R.string.cancel),
+                    color = MaterialTheme.colorScheme.background)
             }
         },
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
