@@ -58,7 +58,7 @@ class MatchViewModel(
         viewModelScope.launch {
             val targetId = inputUserId.value
             if (targetId.isBlank() || targetId.length != 6) {
-                emitUiMessage(R.string.invalid_user_id)
+                emitUiMessage(R.string.invalid_user_id_length)
                 return@launch
             }
 
@@ -69,7 +69,7 @@ class MatchViewModel(
 
             val userExists = userRepo.getUserById(targetId) != null
             if (!userExists) {
-                emitUiMessage(R.string.target_user_not_in_database)
+                emitUiMessage(R.string.not_found)
                 return@launch
             }
 
@@ -97,7 +97,7 @@ class MatchViewModel(
 
             val moodsConflict = iHaveMood && heHasMood && myMood.intersect(otherMood).isEmpty()
             if (moodsConflict) {
-                emitUiMessage(R.string.no_common_movies_generic)
+                emitUiMessage(R.string.no_genre_match)
                 return@launch
             }
 
@@ -112,7 +112,6 @@ class MatchViewModel(
             val filteredOther = filterByGenres(otherPrefs, finalGenres)
 
             val common = findCommonMovies(filteredMine, filteredOther)
-
 
             if (common.isNotEmpty()) {
                 matchResult.value = targetId to common
@@ -167,14 +166,14 @@ class MatchViewModel(
             }
 
 
-            if (!hasAtLeastOneWithPrefs) {
-                emitUiMessage(R.string.no_contacts_have_preferences)
-                return@launch
-            }
-
             if (contactsWithoutPrefs.isNotEmpty()) {
                 val names = contactsWithoutPrefs.joinToString(", ")
                 emitUiTextMessage(R.string.other_user_no_preferences_named, names)
+                return@launch
+            }
+
+            if (!hasAtLeastOneWithPrefs) {
+                emitUiMessage(R.string.no_contacts_have_preferences)
                 return@launch
             }
 

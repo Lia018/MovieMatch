@@ -17,6 +17,7 @@
     <string name="enter_id">Zadajte ID</string>
     <string name="fill_in_login_details">Vyplňte svoje prihlasovacie údaje</string>
     <string name="invalid_user_id_length">Neplatný formát ID</string>
+    <string name="not_found">Používateľ s týmto ID neexistuje</string>
     <string name="invalid_login">Nesprávne ID alebo heslo</string>
     <string name="forgot_password">Zabudnuté heslo?</string>
     <string name="create_account">Nie ste registrovaný? Vytvoriť účet</string>
@@ -24,8 +25,13 @@
     <string name="remember_login_msg">Chcete si zapamätať svoje prihlasovacie údaje pre budúce použitie?</string>
     <string name="yes">Áno</string>
     <string name="no">Nie</string>
+    <string name="remember_decision_title">Pamätať údaje?</string>
+    <string name="remember_decision_msg">Nechcete si zapamätať údaje?</string>
+    <string name="do_not_ask_again">Už nezobrazovať</string>
+    <string name="think_about_it">Premyslím si</string>
     <string name="welcome_back">Vitajte späť!</string>
     <string name="forgot_password_title">Obnova hesla</string>
+    <string name="reset_password_title">Zmena hesla</string>
     <string name="forgot_username_label">Zadajte používateľské meno</string>
     <string name="username_required">Vyplňte meno prosím</string>
     <string name="user_not_found">Používateľ s týmto menom neexistuje</string>
@@ -62,9 +68,7 @@
     <string name="choose_language">Jazyk</string>
     <string name="theme">Téma</string>
     <string name="clear_login_data">Vymazať prihlasovacie údaje</string>
-
     <string name="no_login_data">Nemáte uložené prihlasovacie údaje</string>
-
     <string name="clear_data_title">Vymazať uložené údaje?</string>
     <string name="clear_data_msg">Naozaj chcete vymazať svoje uložené prihlasovacie údaje?</string>
     <string name="login_data_deleted">Uložené prihlasovacie údaje boli vymazané. Boli ste odhlásený</string>
@@ -77,9 +81,6 @@
     <string name="back_to_menu">Späť do menu</string>
     //contacts
     <string name="enter_user_id">Zadajte ID používateľa</string>
-
-    //neplatné ID check
-
     <string name="enter_id_first">Najprv zadajte ID</string>
     <string name="add_contact">Pridať kontakt</string>
     <string name="contact_exists">Tento kontakt už máte</string>
@@ -105,72 +106,28 @@
     <string name="preferences_updated">Preferencie aktualizované!</string>
     //match
     <string name="find_match">Nájsť zhodu</string>
-
-
-
+    <string name="cannot_match_self">Nemôžete hľadať zhodu so sebou samým</string>
     <string name="no_preferences">Vyberte filmy, ktoré si chcete pozrieť</string>
-
-    <string name="invalid_user_id">Neplatné ID</string>
-    <string name="other_user_no_preferences_generic">Zvolený používateľ nemá preferencie</string>
-
+    <string name="other_user_no_preferences_generic">Používateľ nemá filmy v preferenciách</string>
+    <string name="match_found">Spoločné filmy s používateľom %1$s:\n%2$s</string>
+    <string name="no_common_movies_generic">Žiadne spoločné filmy</string>
     <string name="find_match_with_contact">Nájsť zhodu s kontaktom</string>
+    <string name="no_contacts_found">Nemáte žiadne uložené kontakty</string>
     <string name="select_contacts_title">Vyberte kontakty pre hľadanie</string>
     <string name="no_contacts_selected">Nevybrali ste žiadne kontakty</string>
-    <string name="no_contacts_have_preferences">Žiadny z vybraných kontaktov nemá filmy v preferenciách</string>
-    <string name="other_user_no_preferences_named">Používateľ %1$s nemá filmy v preferenciách</string>
-    <string name="no_group_match">Žiadna skupinová zhoda</string>
-
-
-
-    <string name="target_user_not_in_database">HUH</string>
-    <string name="genre_feeling_prompt">Na aký žáner sa dnes cítite?</string>
-    <string name="select_genres_title">HUH</string>
-    <string name="genres_selected">HUH</string>
-    <string name="all_preferences">ALL</string>
-    <string name="shake">ALL</string>
-    <string name="highlighted_movie_format">⭐ %1$s ⭐</string>
-    <string name="other_user_no_preferences_in_selected_genres_generic">Tento používateľ nemá preferencie v zvolených žánroch.</string>
-    <string name="no_preferences_in_selected_genres">Nemáš preferencie v zvolených žánroch.</string>
-    <string name="no_genre_match">žiadne preferencie v zvolených žánroch</string>
-
-    <string name="other_user_no_preferences_in_selected_genres">%1$s nemá preferencie v zvolených žánroch.</string>
-
-
-
-    <string name="remember_decision_title">Pamätať údaje?</string>
-    <string name="remember_decision_msg">Nechcete si teraz zapamätať údaje? Môžete zvoliť, aby sme sa už nikdy nepýtali.</string>
-    <string name="do_not_ask_again">Už nezobrazovať</string>
-    <string name="think_about_it">Premyslím si</string>
-
-    <string name="not_found">Používateľ s týmto ID neexistuje</string>
-
-
-    <string name="no_common_movies_generic">Žiadne spoločné filmy</string>
-    <string name="already_in_contacts">Používateľ už je v kontaktoch</string>
-    <string name="added_to_contacts">Používateľ pridaný do kontaktov</string>
-    <string name="no_contacts_found">Nemáte žiadne uložené kontakty</string>
     <string name="group_match_found">Spoločné filmy:\n%1$s</string>
-    <string name="add_to_contacts">Pridať do kontaktov</string>
-    <string name="reset_password_title">Zmena hesla</string>
-    <string name="password_recovery">Obnova hesla</string>
-    <string name="enter_username">Zadajte meno</string>
-    <string name="reset_password">Zmena hesla</string>
-    <string name="enter_code_and_new_password">Zadajte kód a nové heslo</string>
-    <string name="cannot_match_self">Nemôžete hľadať zhodu so sebou samým</string>
-    <string name="match_found">Spoločné filmy s používateľom %1$s:\n\n%2$s</string>
-    <string name="no_common_movies">Žiadne spoločné filmy s používateľom %1$s.</string>
+    <string name="other_user_no_preferences_named">Používateľ %1$s nemá filmy v preferenciách</string>
+    <string name="no_contacts_have_preferences">Žiadny z vybraných kontaktov nemá filmy v preferenciách</string>
+    <string name="no_group_match">Žiadna skupinová zhoda</string>
+    <string name="genre_feeling_prompt">Na aký žáner sa dnes cítite?</string>
+    <string name="no_genre_match">Žiadne zhody v zvolených žánroch</string>
+    <string name="select_genres_title">Vyberte žánre</string>
+    <string name="all_preferences">Všetky</string>
+    <string name="genres_selected">Žánre vybrané</string>
     <string name="match_result">Výsledok zhody</string>
+    <string name="add_to_contacts">Pridať do kontaktov</string>
+    <string name="added_to_contacts">Používateľ pridaný do kontaktov</string>
     <string name="ok">OK</string>
-    <string name="change_password_title">Change Password</string>
-    <string name="code">Code</string>
-    <string name="code_invalid">Invalid code</string>
-    <string name="code_sent">Code sent</string>
-    <string name="enter_code">Enter code</string>
-    <string name="invalid_code_or_password">Invalid code or password</string>
-    <string name="password_changed">Password changed</string>
-    <string name="recover_password_title">Recover Password</string>
-    <string name="same_password_error">Passwords do not match</string>
-    <string name="verification_code_sent">Verification code sent</string>
-
-
+    <string name="shake">Náhodne vyberám film</string>
+    <string name="highlighted_movie_format">%1$s</string>
 </resources>
