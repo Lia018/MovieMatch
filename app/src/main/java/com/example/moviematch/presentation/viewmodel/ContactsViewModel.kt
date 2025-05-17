@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.moviematch.R
 import com.example.moviematch.data.db.entity.Contact
 import com.example.moviematch.domain.repository.ContactRepository
+import com.example.moviematch.domain.repository.UserRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class ContactsViewModel(
     private val repository: ContactRepository,
+    private val userRepo: UserRepository,
     private val userId: String
 ) : ViewModel() {
 
@@ -61,6 +63,12 @@ class ContactsViewModel(
             emitEvent(R.string.enter_id_first)
             return
         }
+
+        if (userId.length != 6) {
+            emitEvent(R.string.invalid_user_id_length)
+            return
+        }
+
         if (id == userId) {
             emitEvent(R.string.cannot_add_self)
             return
@@ -70,11 +78,20 @@ class ContactsViewModel(
             val exists = repository.getContactsForUser(userId).any { it.contactId == id }
             if (exists) {
                 emitEvent(R.string.contact_exists)
-            } else {
-                repository.addContact(Contact(ownerId = userId, contactId = id))
-                contactInput.value = TextFieldValue("")
-                loadContacts()
+                return@launch
             }
+
+            val userExists = userRepo.getUserById(id) != null
+            if (!userExists) {
+                emitEvent(R.string.not_found)
+                return@launch
+            }
+
+            repository.addContact(
+                Contact(ownerId = userId, contactId = id, addedAt = System.currentTimeMillis())
+            )
+            contactInput.value = TextFieldValue("")
+            loadContacts()
         }
     }
 

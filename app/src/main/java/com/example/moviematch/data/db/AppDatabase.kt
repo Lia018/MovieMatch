@@ -11,7 +11,7 @@ import com.example.moviematch.data.db.entity.Contact
 import com.example.moviematch.data.db.entity.MoviePreference
 import com.example.moviematch.data.db.entity.User
 
-@Database(entities = [User::class, MoviePreference::class, Contact::class], version = 3)
+@Database(entities = [User::class, MoviePreference::class, Contact::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun moviePreferenceDao(): MoviePreferenceDao

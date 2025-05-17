@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import com.example.moviematch.R
 import com.example.moviematch.data.db.AppDatabase
 import com.example.moviematch.data.repository.ContactRepositoryImpl
+import com.example.moviematch.data.repository.UserRepositoryImpl
 import com.example.moviematch.presentation.factory.ContactsViewModelFactory
 import com.example.moviematch.presentation.viewmodel.ContactsViewModel
 
@@ -50,8 +51,9 @@ fun ContactsScreen(userId: String, navController: NavController) {
 
     val db = AppDatabase.getDatabase(context)
     val contactRepository = remember { ContactRepositoryImpl(db.contactDao()) }
+    val userRepository = remember { UserRepositoryImpl(db.userDao()) }
     val viewModel: ContactsViewModel = viewModel(
-        factory = ContactsViewModelFactory(contactRepository, userId)
+        factory = ContactsViewModelFactory(contactRepository, userRepository, userId)
     )
 
     val contactInput by viewModel.contactInput.collectAsState()

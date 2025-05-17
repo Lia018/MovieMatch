@@ -11,7 +11,7 @@ interface ContactDao {
     @Insert
     suspend fun addContact(contact: Contact)
 
-    @Query("SELECT * FROM contacts WHERE ownerId = :userId")
+    @Query("SELECT * FROM contacts WHERE ownerId = :userId ORDER BY addedAt DESC")
     suspend fun getContactsForUser(userId: String): List<Contact>
 
     @Query("DELETE FROM contacts WHERE ownerId = :ownerId AND contactId = :contactId")
@@ -22,4 +22,5 @@ interface ContactDao {
 
     @Query("SELECT * FROM contacts WHERE ownerId = :ownerId AND contactId = :contactId LIMIT 1")
     suspend fun getContact(ownerId: String, contactId: String): Contact?
+
 }

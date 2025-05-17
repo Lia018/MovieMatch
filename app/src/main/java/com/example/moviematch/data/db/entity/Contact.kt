@@ -6,6 +6,7 @@ import androidx.room.Entity
 data class Contact(
     val ownerId: String,
     val contactId: String,
-    val displayName: String = ""
+    val displayName: String = "",
+    val addedAt: Long = System.currentTimeMillis()
 )
 
