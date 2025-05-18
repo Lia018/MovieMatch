@@ -1,8 +1,9 @@
 package com.example.moviematch.presentation.viewmodel
 
+import android.app.Application
 import android.content.Context
 import androidx.annotation.StringRes
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviematch.R
 import com.example.moviematch.data.db.entity.Contact
@@ -14,17 +15,19 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
 
 /**
  * ViewModel for handling logic related to movie match finding between users
  * based on their saved preferences, moods (genres), and contact relationships.
  */
 class MatchViewModel(
+    application: Application,
     private val userId: String,
     private val movieRepo: MoviePreferenceRepository,
     private val contactRepo: ContactRepository,
     private val userRepo: UserRepository
-) : ViewModel() {
+) : AndroidViewModel(application) {
 
     /** Input field state for entering a user ID to match with */
     val inputUserId = MutableStateFlow("")
@@ -77,10 +80,15 @@ class MatchViewModel(
      * Finds a direct movie match between the current user and another user based on preferences and moods.
      * Shows UI messages in case of input errors or lack of compatibility.
      */
-    fun findDirectMatch(context: Context) {
+    fun findDirectMatch() {
         viewModelScope.launch {
             val targetId = inputUserId.value.trim()
-            if (targetId.isBlank() || targetId.length != 6) {
+            if (targetId.isBlank()) {
+                emitUiMessage(R.string.enter_id_first)
+                return@launch
+            }
+
+            if (targetId.length != 6) {
                 emitUiMessage(R.string.invalid_user_id_length)
                 return@launch
             }
@@ -110,10 +118,11 @@ class MatchViewModel(
             }
 
             val myMood = selectedGenres.value
-            val otherMood = loadSelectedGenresForUser(context, targetId)
+            val otherMood = loadSelectedGenresForUser(targetId)
 
             val moodConflict = myMood.isNotEmpty() && otherMood.isNotEmpty() &&
                     myMood.intersect(otherMood.toSet()).isEmpty()
+
             if (moodConflict) {
                 emitUiMessage(R.string.no_genre_match)
                 return@launch
@@ -153,44 +162,62 @@ class MatchViewModel(
                 return@launch
             }
 
-            val filteredMine = filterByGenres(myPrefs, selectedGenres.value)
-            val myMovies = filteredMine.map { it.movie }.toSet()
-            var common = myMovies
-
-            val contactsWithoutPrefs = mutableListOf<String>()
-            var hasAtLeastOneWithPrefs = false
+            val myMood = selectedGenres.value
+            val groupPrefs = mutableListOf<Pair<String, List<MoviePreference>>>()
+            val groupMoods = mutableMapOf<String, List<String>>()
+            val missingPrefs = mutableListOf<String>()
 
             for (id in selected) {
                 val prefs = movieRepo.getMoviesForUser(id)
-                val filtered = filterByGenres(prefs, selectedGenres.value)
-
                 if (prefs.isEmpty()) {
                     val name = contacts.value.firstOrNull { it.contactId == id }?.displayName ?: id
-                    contactsWithoutPrefs.add(name)
-                } else if (filtered.isEmpty()) {
-                    val name = contacts.value.firstOrNull { it.contactId == id }?.displayName ?: id
-                    emitUiTextMessage(R.string.other_user_no_preferences_named, name)
+                    missingPrefs.add(name)
                 } else {
-                    hasAtLeastOneWithPrefs = true
-                    common = common.intersect(filtered.map { it.movie }.toSet())
+                    groupPrefs.add(id to prefs)
+                    val mood = loadSelectedGenresForUser(id)
+                    groupMoods[id] = mood
                 }
             }
 
-            if (contactsWithoutPrefs.isNotEmpty()) {
-                val names = contactsWithoutPrefs.joinToString(", ")
-                emitUiTextMessage(R.string.other_user_no_preferences_named, names)
-                return@launch
-            }
-
-            if (!hasAtLeastOneWithPrefs) {
+            if (groupPrefs.isEmpty()) {
                 emitUiMessage(R.string.no_contacts_have_preferences)
                 return@launch
             }
 
-            if (common.isNotEmpty()) {
-                matchResult.value = null to common.sorted()
+            val allMoods = groupMoods.values.filter { it.isNotEmpty() }
+            val commonMood = when {
+                myMood.isNotEmpty() && allMoods.isNotEmpty() -> {
+                    val groupMoodIntersection = allMoods.fold(myMood.toSet()) { acc, moods ->
+                        acc.intersect(moods.toSet())
+                    }
+                    if (groupMoodIntersection.isEmpty()) {
+                        emitUiMessage(R.string.no_genre_match)
+                        return@launch
+                    }
+                    groupMoodIntersection.toList()
+                }
+                myMood.isNotEmpty() -> myMood
+                allMoods.isNotEmpty() -> allMoods.reduce { acc, list -> acc.intersect(list.toSet()).toList() }
+                else -> emptyList()
+            }
+
+            val filteredMine = filterByGenres(myPrefs, commonMood)
+            var commonMovies = filteredMine.map { it.movie }.toSet()
+
+            for ((_, prefs) in groupPrefs) {
+                val filtered = filterByGenres(prefs, commonMood)
+                commonMovies = commonMovies.intersect(filtered.map { it.movie }.toSet())
+            }
+
+            if (commonMovies.isNotEmpty()) {
+                matchResult.value = null to commonMovies.sorted()
             } else {
                 emitUiMessage(R.string.no_group_match)
+            }
+
+            if (missingPrefs.isNotEmpty()) {
+                val names = missingPrefs.joinToString(", ")
+                emitUiTextMessage(R.string.other_user_no_preferences_named, names)
             }
         }
     }
@@ -203,7 +230,6 @@ class MatchViewModel(
     fun addToContacts(contactId: String) {
         viewModelScope.launch {
             val exists = contactRepo.getContactsForUser(userId).any { it.contactId == contactId }
-
             if (exists) {
                 emitUiMessage(R.string.contact_exists)
             } else {
@@ -241,7 +267,10 @@ class MatchViewModel(
     /**
      * Returns a sorted list of common movies between two users.
      */
-    private fun findCommonMovies(prefs1: List<MoviePreference>, prefs2: List<MoviePreference>): List<String> {
+    private fun findCommonMovies(
+        prefs1: List<MoviePreference>,
+        prefs2: List<MoviePreference>
+    ): List<String> {
         val set1 = prefs1.map { it.movie }.toSet()
         val set2 = prefs2.map { it.movie }.toSet()
         return set1.intersect(set2).sorted()
@@ -268,18 +297,16 @@ class MatchViewModel(
     /**
      * Saves selected genres (user mood) into SharedPreferences.
      */
-    fun saveSelectedGenres(context: Context) {
-        context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).edit().apply {
-            putStringSet("selected_genres_$userId", selectedGenres.value.toSet())
-            apply()
-        }
+    fun saveSelectedGenres() {
+        val prefs = getApplication<Application>().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        prefs.edit { putStringSet("selected_genres_$userId", selectedGenres.value.toSet()) }
     }
 
     /**
      * Loads the current user's previously selected genres from SharedPreferences.
      */
-    fun loadSelectedGenres(context: Context) {
-        val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    fun loadSelectedGenres() {
+        val prefs = getApplication<Application>().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val saved = prefs.getStringSet("selected_genres_$userId", emptySet())
         selectedGenres.value = saved?.toList() ?: emptyList()
     }
@@ -287,8 +314,8 @@ class MatchViewModel(
     /**
      * Loads another user's selected genres from SharedPreferences.
      */
-    private fun loadSelectedGenresForUser(context: Context, targetUserId: String): List<String> {
-        val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    private fun loadSelectedGenresForUser(targetUserId: String): List<String> {
+        val prefs = getApplication<Application>().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val saved = prefs.getStringSet("selected_genres_$targetUserId", emptySet())
         return saved?.toList() ?: emptyList()
     }

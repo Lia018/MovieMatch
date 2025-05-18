@@ -98,7 +98,7 @@ fun MatchScreen(userId: String, navController: NavController) {
     // Sync selected genres with stored preferences and update checkboxes
     LaunchedEffect(viewModel.selectedGenres.collectAsState().value, allGenresWithAllOption) {
         viewModel.loadGenres()
-        viewModel.loadSelectedGenres(context)
+        viewModel.loadSelectedGenres()
 
         val selectedFromVM = viewModel.selectedGenres.value
 
@@ -182,7 +182,7 @@ fun MatchScreen(userId: String, navController: NavController) {
 
         // Button to find direct match
         Button(
-            onClick = { viewModel.findDirectMatch(context) },
+            onClick = { viewModel.findDirectMatch() },
             modifier = Modifier.width(350.dp),
         ) {
             Text(stringResource(R.string.find_match))
@@ -231,14 +231,19 @@ fun MatchScreen(userId: String, navController: NavController) {
                 selectedStates = selectedStates,
                 allOptionLabel = allOptionLabel,
                 onConfirm = { selected ->
-                    viewModel.selectedGenres.value = selected
-                    viewModel.saveSelectedGenres(context)
-                    showGenreDialog = false
-                    Toast.makeText(context, context.getString(R.string.genres_selected), Toast.LENGTH_SHORT).show()
+                    if (selected.isEmpty()) {
+                        Toast.makeText(context, context.getString(R.string.no_genres_selected), Toast.LENGTH_SHORT).show()
+                    } else {
+                        viewModel.selectedGenres.value = selected
+                        viewModel.saveSelectedGenres()
+                        showGenreDialog = false
+                        Toast.makeText(context, context.getString(R.string.genres_selected), Toast.LENGTH_SHORT).show()
+                    }
                 },
                 onDismiss = { showGenreDialog = false }
             )
         }
+
 
         Spacer(modifier = Modifier.height(12.dp))
 

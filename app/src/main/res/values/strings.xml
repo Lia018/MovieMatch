@@ -122,6 +122,7 @@
     <string name="genre_feeling_prompt">Na aký žáner sa dnes cítite?</string>
     <string name="no_genre_match">Žiadne zhody v zvolených žánroch</string>
     <string name="select_genres_title">Vyberte žánre</string>
+    <string name="no_genres_selected">Nevybrali ste žiadne žánre</string>
     <string name="all_preferences">Všetky</string>
     <string name="genres_selected">Žánre vybrané</string>
     <string name="match_result">Výsledok zhody</string>
