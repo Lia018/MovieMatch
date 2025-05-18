@@ -22,7 +22,6 @@ class ContactsViewModel(
 ) : ViewModel() {
 
     val contactInput = MutableStateFlow(TextFieldValue(""))
-    private val _contactInput = MutableStateFlow("")
 
     private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
     val contacts: StateFlow<List<Contact>> = _contacts

@@ -60,7 +60,6 @@ fun ContactsScreen(userId: String, navController: NavController) {
 
     val contacts by viewModel.contacts.collectAsState()
     val selectedContact by viewModel.selectedContact.collectAsState()
-    val editedName by viewModel.editedName.collectAsState()
 
     val showInitialDialog = remember { derivedStateOf { selectedContact != null } }
     var showActionDialog by rememberSaveable { mutableStateOf(false) }
@@ -187,41 +186,6 @@ fun ContactsScreen(userId: String, navController: NavController) {
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
         )
     }
-
-    /*if (showEditDialog) {
-        AlertDialog(
-            onDismissRequest = { showEditDialog = false },
-            title = { Text(stringResource(R.string.edit_contact)) },
-            text = {
-                Column {
-                    Text(stringResource(R.string.contact_id_label, selectedContact?.contactId ?: ""))
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = editedName,
-                        onValueChange = { viewModel.editedName.value = it },
-                        label = { Text(stringResource(R.string.contact_name)) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.saveEditedName()
-                    showEditDialog = false
-                }) {
-                    Text(text = stringResource(R.string.save),
-                        color = MaterialTheme.colorScheme.background)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showEditDialog = false }) {
-                    Text(text = stringResource(R.string.cancel),
-                        color = MaterialTheme.colorScheme.background)
-                }
-            },
-            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
-        )
-    }*/
 
     if (showEditDialog) {
         var tempName by rememberSaveable(selectedContact?.contactId) {

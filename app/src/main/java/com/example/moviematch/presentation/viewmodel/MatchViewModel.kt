@@ -95,14 +95,16 @@ class MatchViewModel(
             val iHaveMood = myMood.isNotEmpty()
             val heHasMood = otherMood.isNotEmpty()
 
-            val moodsConflict = iHaveMood && heHasMood && myMood.intersect(otherMood).isEmpty()
+            //val moodsConflict = iHaveMood && heHasMood && myMood.intersect(otherMood).isEmpty()
+            val moodsConflict = iHaveMood && heHasMood && myMood.intersect(otherMood.toSet()).isEmpty()
             if (moodsConflict) {
                 emitUiMessage(R.string.no_genre_match)
                 return@launch
             }
 
             val finalGenres = when {
-                myHasMood && otherHasMood -> myMood.intersect(otherMood).toList()
+                //myHasMood && otherHasMood -> myMood.intersect(otherMood).toList()
+                myHasMood && otherHasMood -> myMood.intersect(otherMood.toSet()).toList()
                 myHasMood -> myMood
                 otherHasMood -> otherMood
                 else -> emptyList()
@@ -156,8 +158,8 @@ class MatchViewModel(
                         .firstOrNull { it.contactId == id }
                         ?.displayName
                         ?.takeIf { it.isNotBlank() } ?: id
-                    val names = contactsWithoutPrefs.joinToString(", ")
-                    emitUiTextMessage(R.string.other_user_no_preferences_named, names)
+                        val names = contactsWithoutPrefs.joinToString(", ")
+                        emitUiTextMessage(R.string.other_user_no_preferences_named, names)
                 } else {
                     hasAtLeastOneWithPrefs = true
                     val theirMovies = filtered.map { it.movie }.toSet()
@@ -246,7 +248,7 @@ class MatchViewModel(
         selectedGenres.value = saved?.toList() ?: emptyList()
     }
 
-    fun loadSelectedGenresForUser(context: Context, targetUserId: String): List<String> {
+    private fun loadSelectedGenresForUser(context: Context, targetUserId: String): List<String> {
         val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val saved = prefs.getStringSet("selected_genres_$targetUserId", emptySet())
         return saved?.toList() ?: emptyList()

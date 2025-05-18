@@ -2,7 +2,6 @@ package com.example.moviematch.presentation.screen
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -71,6 +70,9 @@ fun EditProfileScreen(
 ) {
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context)
+    //val mainViewModel: MainViewModel = viewModel()
+    //val isDarkTheme by mainViewModel.theme.collectAsState()
+
     val userRepo = remember { UserRepositoryImpl(db.userDao()) }
 
     val viewModel: EditProfileViewModel = viewModel(
@@ -84,14 +86,9 @@ fun EditProfileScreen(
     val showNew by viewModel.showNewPassword.collectAsState()
     val showId by viewModel.showId.collectAsState()
     val isDark by viewModel.isDarkTheme.collectAsState()
-    val showDelete by viewModel.showDeleteDialog.collectAsState()
-    val showClear by viewModel.showClearDataDialog.collectAsState()
 
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
     var showClearDataDialog by rememberSaveable { mutableStateOf(false) }
-
-    val backgroundColor by animateColorAsState(targetValue = MaterialTheme.colorScheme.background)
-    //val textColor by animateColorAsState(targetValue = MaterialTheme.colorScheme.onPrimary)
 
     val selectedLanguage = remember { mutableStateOf("en") }
 
@@ -101,8 +98,6 @@ fun EditProfileScreen(
     val languages = listOf("sk", "en")
 
     val scrollState = rememberScrollState()
-
-
 
     LaunchedEffect(Unit) {
         viewModel.message.collect { resId ->
@@ -114,7 +109,6 @@ fun EditProfileScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            //.background(backgroundColor)
             .verticalScroll(scrollState)
             .systemBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -155,7 +149,6 @@ fun EditProfileScreen(
             modifier = Modifier
                 .width(350.dp)
                 .background(MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.extraLarge)
-                //.height(48.dp)
                 .defaultMinSize(minHeight = ButtonDefaults.MinHeight)
                 .padding(ButtonDefaults.ContentPadding)
                 .pointerInput(Unit) {
@@ -218,12 +211,11 @@ fun EditProfileScreen(
 
             languages.forEach { langCode ->
                 val isSelected = selectedLanguage.value == langCode
-                val textColor = MaterialTheme.colorScheme.onSecondary
 
                 Button(
                     onClick = {
                         selectedLanguage.value = langCode
-                        prefs.edit().putString("lang", langCode).apply()
+                        prefs.edit { putString("lang", langCode) }
                         onLanguageChange(langCode)
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -233,7 +225,6 @@ fun EditProfileScreen(
                     Text(
                         text = langCode.uppercase(),
                         color = MaterialTheme.colorScheme.onSecondary
-                        //color = if (isSelected) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -315,10 +306,6 @@ fun EditProfileScreen(
                 }
             },
             dismissButton = {
-                /*TextButton(onClick = { viewModel.showDeleteDialog.value = false }) {
-                    Text(text = stringResource(R.string.no_keep),
-                        color = MaterialTheme.colorScheme.background)
-                }*/
                 TextButton(onClick = { showDeleteDialog = false }) {
                     Text(text = stringResource(R.string.no_keep),
                         color = MaterialTheme.colorScheme.background)
@@ -335,7 +322,6 @@ if (showClearDataDialog) {
         text = { Text(stringResource(R.string.clear_data_msg)) },
         confirmButton = {
             TextButton(onClick = {
-                //viewModel.showClearDataDialog.value = false
                 showClearDataDialog = false
                 viewModel.clearLoginData(
                     clearPrefs = {
@@ -353,7 +339,6 @@ if (showClearDataDialog) {
             }
         },
         dismissButton = {
-            //TextButton(onClick = { viewModel.showClearDataDialog.value = false }) {
             TextButton(onClick = { showClearDataDialog = false }) {
                 Text(text = stringResource(R.string.no),
                     color = MaterialTheme.colorScheme.background)

@@ -1,4 +1,4 @@
-package com.example.moviematch.util
+/*package com.example.moviematch.util
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
@@ -32,4 +32,4 @@ object ThemeHelper {
     }
 
 
-}
+}*/

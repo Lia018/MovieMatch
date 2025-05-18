@@ -1,4 +1,4 @@
-package com.example.moviematch.util
+/*package com.example.moviematch.util
 
 import android.content.Context
 import android.content.res.Configuration
@@ -24,5 +24,5 @@ fun setLocale(context: Context, langCode: String) {
     /*val intent = Intent(context, MainActivity::class.java)
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
     context.startActivity(intent)*/
-}
+}*/
 

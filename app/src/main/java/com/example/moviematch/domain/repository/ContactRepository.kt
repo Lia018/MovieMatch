@@ -6,7 +6,6 @@ interface ContactRepository {
     suspend fun addContact(contact: Contact)
     suspend fun getContactsForUser(userId: String): List<Contact>
     suspend fun deleteContact(ownerId: String, contactId: String)
-    //suspend fun getUserById(userId: String): Contact?
     suspend fun getContact(ownerId: String, contactId: String): Contact?
     suspend fun updateContact(contact: Contact)
 }

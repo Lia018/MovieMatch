@@ -30,16 +30,17 @@ import androidx.navigation.NavController
 import com.example.moviematch.R
 
 
-
-
 @Composable
 fun MainScreen(
+
+    //val viewModel: MainViewModel = viewModel()
+    //val isDarkTheme = viewModel.theme.collectAsState().value == "dark"
 
     navController: NavController,
     isDarkTheme: Boolean,
     onLanguageChange: (String) -> Unit,
     onThemeToggle: () -> Unit,
-) {
+    ) {
 
     val themeIcon = if (!isDarkTheme) R.drawable.light_bulb_on else R.drawable.light_bulb_off
 
@@ -66,6 +67,7 @@ fun MainScreen(
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier
                         .clickable { onLanguageChange("sk") },
+                        //.clickable { viewModel.setLanguage("sk") },
                     fontSize = 16.sp
                 )
             }
@@ -81,6 +83,7 @@ fun MainScreen(
                     modifier = Modifier
                         .size(24.dp)
                         .clickable { onThemeToggle() },
+                        //.clickable { viewModel.toggleTheme() }
                 )
             }
 
@@ -94,6 +97,7 @@ fun MainScreen(
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier
                         .clickable { onLanguageChange("en") },
+                        //.clickable { viewModel.setLanguage("en") },
                     fontSize = 16.sp
                 )
             }

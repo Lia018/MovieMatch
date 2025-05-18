@@ -38,6 +38,8 @@ fun AppNavigation(
         onLanguageChange = onLanguageChange,
         onThemeToggle = onThemeToggle
     )
+    //val navController = rememberNavController()
+    //AppNavGraph(navController = navController, startDestination = "main")
 }
 
 @Composable
@@ -48,9 +50,12 @@ fun AppNavGraph(
     onLanguageChange: (String) -> Unit,
     onThemeToggle: () -> Unit
 ) {
+    //val mainViewModel: com.example.moviematch.presentation.viewmodel.MainViewModel = viewModel()
+
     NavHost(navController = navController, startDestination = startDestination) {
 
         composable("main") {
+            //MainScreen(navController = navController)
             MainScreen(
                 navController = navController,
                 isDarkTheme = isDarkTheme,

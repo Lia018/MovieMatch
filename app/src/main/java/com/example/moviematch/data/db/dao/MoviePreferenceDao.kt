@@ -28,8 +28,4 @@ interface MoviePreferenceDao {
 
     @Query("SELECT * FROM movie_preferences WHERE userId = :userId")
     suspend fun getMoviesForUser(userId: String): List<MoviePreference>
-
-
-
-
 }

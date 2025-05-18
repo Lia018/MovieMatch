@@ -50,10 +50,11 @@ import com.example.moviematch.presentation.viewmodel.PreferencesViewModel
 fun PreferencesScreen(userId: String, navController: NavController) {
     val context = LocalContext.current
 
+    val application = context.applicationContext as android.app.Application
     val db = AppDatabase.getDatabase(context)
     val repo = remember { MoviePreferenceRepositoryImpl(db.moviePreferenceDao()) }
     val viewModel: PreferencesViewModel = viewModel(
-        factory = PreferencesViewModelFactory(context, userId, repo)
+        factory = PreferencesViewModelFactory(application, userId, repo)
     )
 
     val genreMovieMap by viewModel.genreMovieMap.collectAsState()
@@ -61,7 +62,8 @@ fun PreferencesScreen(userId: String, navController: NavController) {
 
     LaunchedEffect(genreMovieMap) {
         if (selectedGenre.isEmpty() && genreMovieMap.isNotEmpty()) {
-            viewModel.selectedGenre.value = genreMovieMap.keys.sorted().first()
+            //viewModel.selectedGenre.value = genreMovieMap.keys.sorted().first()
+            viewModel.selectedGenre.value = genreMovieMap.keys.minOf { it }
         }
     }
 
@@ -164,6 +166,7 @@ fun GenreDropdownMenu(
         onExpandedChange = { expanded = !expanded },
         modifier = Modifier.width(350.dp)
     ) {
+        @Suppress("DEPRECATION")
         TextField(
             readOnly = true,
             value = selectedGenre,

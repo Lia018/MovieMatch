@@ -87,8 +87,6 @@ fun MatchScreen(userId: String, navController: NavController) {
 
     var showGenreDialog by rememberSaveable { mutableStateOf(false) }
 
-    var selectedGenres by remember { mutableStateOf<List<String>>(emptyList()) }
-
     LaunchedEffect(viewModel.selectedGenres.collectAsState().value, allGenresWithAllOption) {
         viewModel.loadGenres()
         viewModel.loadSelectedGenres(context)
@@ -325,7 +323,6 @@ fun MatchResultDialog(
                         Text(
                             text = displayText,
                             color = if (movie == highlightedMovie) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onSecondary,
-                            //color = MaterialTheme.colorScheme.background,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                     }
@@ -525,8 +522,8 @@ fun GenreSelectionDialog(
                                     val newState = !selectedStates[0]
                                     selectedStates.indices.forEach { i -> selectedStates[i] = newState }
                                 } else {
-                                    selectedStates[index] = it
-                                    if (!it) selectedStates[0] = false
+                                    selectedStates[index] = !selectedStates[index]
+                                    if (!selectedStates[index]) selectedStates[0] = false
                                     val allSelected = selectedStates.drop(1).all { it }
                                     selectedStates[0] = allSelected
                                 }

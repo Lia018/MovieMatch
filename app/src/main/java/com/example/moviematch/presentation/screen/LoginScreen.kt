@@ -101,7 +101,7 @@ fun LoginScreen(
         } else if (skipAutoLogin && prefillUserId != null) {
             viewModel.onUserIdChange(prefillUserId)
         }
-        }
+    }
 
 
     LaunchedEffect(loginSuccess) {
@@ -310,7 +310,6 @@ fun LoginScreen(
     }
 
     if (showRememberDialog && !suppressRememberDialog && pendingUserId != null && pendingPassword != null) {
-        //if (showRememberDialog && pendingUserId != null && pendingPassword != null) {
         AlertDialog(
             onDismissRequest = { showRememberDialog = false },
             title = {
@@ -360,7 +359,7 @@ fun LoginScreen(
             text = { Text(stringResource(R.string.remember_decision_msg)) },
             confirmButton = {
                 TextButton(onClick = {
-                    prefs.edit().putBoolean("suppressRememberDialog_${pendingUserId!!}", true).apply()
+                    prefs.edit { putBoolean("suppressRememberDialog_${pendingUserId!!}", true) }
                     suppressRememberDialog = true
                     showRememberOptions = false
                     Toast.makeText(context, context.getString(R.string.welcome_back), Toast.LENGTH_SHORT).show()

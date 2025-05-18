@@ -25,8 +25,6 @@ class EditProfileViewModel(
     val showNewPassword = MutableStateFlow(false)
     val showId = MutableStateFlow(false)
     val isDarkTheme = MutableStateFlow(false)
-    val showDeleteDialog = MutableStateFlow(false)
-    val showClearDataDialog = MutableStateFlow(false)
 
     val username = MutableStateFlow(TextFieldValue(""))
     val currentPassword = MutableStateFlow(TextFieldValue(""))

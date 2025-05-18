@@ -20,10 +20,6 @@ class ContactRepositoryImpl(
         contactDao.deleteContact(ownerId, contactId)
     }
 
-    /*override suspend fun getUserById(userId: String): Contact? {
-        return contactDao.getUserById(userId)
-    }*/
-
     override suspend fun getContact(ownerId: String, contactId: String): Contact? {
         return contactDao.getContact(ownerId, contactId)
     }
@@ -31,6 +27,5 @@ class ContactRepositoryImpl(
     override suspend fun updateContact(contact: Contact) {
         contactDao.update(contact)
     }
-
 
 }
