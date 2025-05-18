@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,19 +41,37 @@ import com.example.moviematch.R
 import com.example.moviematch.presentation.navigation.NavRoute
 import com.example.moviematch.presentation.viewmodel.RegisterViewModel
 
+/**
+ * Composable function representing the user registration screen.
+ *
+ * This screen allows a new user to input a name and password to register.
+ * It handles form submission, success feedback, and error display using toasts.
+ *
+ * @param navController Navigation controller used for routing to other screens.
+ * @param viewModel ViewModel containing the registration logic and state.
+ */
 @Composable
 fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
     val context = LocalContext.current
+
+    // Collect state from ViewModel
     val name by viewModel.name.collectAsState()
     val password by viewModel.password.collectAsState()
     var showPassword by remember { mutableStateOf(false) }
 
+    /**
+     * Observes and displays error messages emitted from the ViewModel using Toasts.
+     */
     LaunchedEffect(Unit) {
         viewModel.errorMessage.collect { resId ->
             Toast.makeText(context, context.getString(resId), Toast.LENGTH_SHORT).show()
         }
     }
 
+    /**
+     * Handles successful registration by showing a Toast and navigating to the login screen
+     * with the new user ID pre-filled.
+     */
     LaunchedEffect(Unit) {
         viewModel.registrationSuccess.collect { userId ->
             Toast.makeText(
@@ -60,12 +79,15 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
                 context.getString(R.string.registered_id, userId),
                 Toast.LENGTH_LONG
             ).show()
+
+            // Navigate to login with pre-filled user ID and flag to skip auto-login
             navController.navigate(NavRoute.Login.route + "?prefill=$userId&fromRegister=true") {
                 popUpTo(NavRoute.Register.route) { inclusive = true }
             }
         }
     }
 
+    // UI layout
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -73,27 +95,20 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
             .systemBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        // Username input field
         OutlinedTextField(
             value = name,
             onValueChange = viewModel::onNameChange,
             label = { Text(stringResource(R.string.enter_name)) },
             singleLine = true,
             modifier = Modifier.width(350.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                focusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary,
-                focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedLabelColor = MaterialTheme.colorScheme.onSecondary,
-                cursorColor = MaterialTheme.colorScheme.primary,
-            )
+            colors = themedTextFieldColors()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Password input field with optional visibility toggle
         OutlinedTextField(
             value = password,
             onValueChange = viewModel::onPasswordChange,
@@ -101,26 +116,16 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
             singleLine = true,
             visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.width(350.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                focusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary,
-                focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedLabelColor = MaterialTheme.colorScheme.onSecondary,
-                cursorColor = MaterialTheme.colorScheme.primary,
-            )
+            colors = themedTextFieldColors()
         )
 
+        // Password visibility toggle
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .width(375.dp)
                 .padding(top = 8.dp)
-
         ) {
             Checkbox(
                 checked = showPassword,
@@ -128,24 +133,22 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
                 colors = CheckboxDefaults.colors(
                     checkedColor = MaterialTheme.colorScheme.primary,
                     checkmarkColor = MaterialTheme.colorScheme.onSecondary,
-                    uncheckedColor = MaterialTheme.colorScheme.onSecondary,
+                    uncheckedColor = MaterialTheme.colorScheme.onSecondary
                 )
-
             )
             Text(
                 text = stringResource(R.string.show_password),
                 color = MaterialTheme.colorScheme.onSecondary,
-                modifier = Modifier
-                    .clickable { showPassword = !showPassword }
+                modifier = Modifier.clickable { showPassword = !showPassword }
             )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // Register button
         Button(
             onClick = { viewModel.registerUser() },
-            modifier = Modifier
-                .width(350.dp),
+            modifier = Modifier.width(350.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
@@ -157,6 +160,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
 
         Spacer(modifier = Modifier.weight(1f))
 
+        // Navigation back to Login screen
         TextButton(
             onClick = {
                 navController.navigate(NavRoute.Login.route + "?fromRegister=true") {
@@ -172,4 +176,22 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
             )
         }
     }
+}
+
+/**
+ * Returns themed colors for text fields that match the application's MaterialTheme.
+ */
+@Composable
+private fun themedTextFieldColors(): TextFieldColors {
+    return TextFieldDefaults.colors(
+        focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+        unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+        focusedTextColor = MaterialTheme.colorScheme.onSecondary,
+        unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
+        focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+        unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary,
+        focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+        unfocusedLabelColor = MaterialTheme.colorScheme.onSecondary,
+        cursorColor = MaterialTheme.colorScheme.primary
+    )
 }

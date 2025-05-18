@@ -46,23 +46,33 @@ import com.example.moviematch.data.repository.MoviePreferenceRepositoryImpl
 import com.example.moviematch.presentation.factory.PreferencesViewModelFactory
 import com.example.moviematch.presentation.viewmodel.PreferencesViewModel
 
+/**
+ * Composable screen that allows the user to manage their movie preferences.
+ *
+ * The user can select a genre and then choose movies from that genre to save as preferences.
+ *
+ * @param userId The ID of the currently logged-in user.
+ * @param navController Navigation controller used for routing between screens.
+ */
 @Composable
 fun PreferencesScreen(userId: String, navController: NavController) {
     val context = LocalContext.current
-
     val application = context.applicationContext as android.app.Application
+
+    // Initialize repository and ViewModel
     val db = AppDatabase.getDatabase(context)
     val repo = remember { MoviePreferenceRepositoryImpl(db.moviePreferenceDao()) }
     val viewModel: PreferencesViewModel = viewModel(
         factory = PreferencesViewModelFactory(application, userId, repo)
     )
 
+    // Collect UI state
     val genreMovieMap by viewModel.genreMovieMap.collectAsState()
     val selectedGenre by viewModel.selectedGenre.collectAsState()
 
+    // Automatically select the first genre when data loads
     LaunchedEffect(genreMovieMap) {
         if (selectedGenre.isEmpty() && genreMovieMap.isNotEmpty()) {
-            //viewModel.selectedGenre.value = genreMovieMap.keys.sorted().first()
             viewModel.selectedGenre.value = genreMovieMap.keys.minOf { it }
         }
     }
@@ -80,6 +90,7 @@ fun PreferencesScreen(userId: String, navController: NavController) {
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Dropdown menu for selecting movie genre
         GenreDropdownMenu(
             genres = genreMovieMap.keys.sorted(),
             selectedGenre = selectedGenre,
@@ -88,6 +99,7 @@ fun PreferencesScreen(userId: String, navController: NavController) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // List of movies with checkboxes
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -122,6 +134,7 @@ fun PreferencesScreen(userId: String, navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Button to save preferences
         Button(
             onClick = { viewModel.saveAll() },
             modifier = Modifier.width(350.dp),
@@ -136,6 +149,7 @@ fun PreferencesScreen(userId: String, navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Button to return to the main menu
         Button(
             onClick = { navController.navigate("menu/$userId") },
             modifier = Modifier.width(350.dp),
@@ -152,6 +166,13 @@ fun PreferencesScreen(userId: String, navController: NavController) {
     }
 }
 
+/**
+ * Composable that displays a dropdown menu with a list of genres.
+ *
+ * @param genres List of genres to choose from.
+ * @param selectedGenre Currently selected genre.
+ * @param onGenreSelected Callback triggered when a genre is selected.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GenreDropdownMenu(
@@ -166,6 +187,7 @@ fun GenreDropdownMenu(
         onExpandedChange = { expanded = !expanded },
         modifier = Modifier.width(350.dp)
     ) {
+        // menuAnchor uses deprecated API temporarily until new one stabilizes
         @Suppress("DEPRECATION")
         TextField(
             readOnly = true,
@@ -189,6 +211,7 @@ fun GenreDropdownMenu(
             )
         )
 
+        // Actual dropdown content
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }

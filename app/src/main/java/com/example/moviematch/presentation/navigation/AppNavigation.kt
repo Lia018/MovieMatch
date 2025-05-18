@@ -24,6 +24,16 @@ import com.example.moviematch.presentation.screen.RegisterScreen
 import com.example.moviematch.presentation.viewmodel.LoginViewModel
 import com.example.moviematch.presentation.viewmodel.RegisterViewModel
 
+/**
+ * Root composable for navigation.
+ *
+ * Initializes the NavController and sets up the navigation graph with optional handlers
+ * for theme and language change events passed from the activity layer.
+ *
+ * @param isDarkTheme Boolean flag indicating if dark theme is active.
+ * @param onLanguageChange Callback invoked when the user changes the language.
+ * @param onThemeToggle Callback invoked when the user toggles the theme.
+ */
 @Composable
 fun AppNavigation(
     isDarkTheme: Boolean,
@@ -38,10 +48,19 @@ fun AppNavigation(
         onLanguageChange = onLanguageChange,
         onThemeToggle = onThemeToggle
     )
-    //val navController = rememberNavController()
-    //AppNavGraph(navController = navController, startDestination = "main")
 }
 
+/**
+ * Defines the navigation graph and routes for the app using Jetpack Navigation Compose.
+ *
+ * All app destinations (screens) are declared here using composable routes.
+ *
+ * @param navController Controller that manages navigation between composable.
+ * @param startDestination Route name of the initial screen to be shown.
+ * @param isDarkTheme Boolean flag indicating the current theme.
+ * @param onLanguageChange Callback invoked to update the app's language.
+ * @param onThemeToggle Callback invoked to switch the app theme.
+ */
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
@@ -50,12 +69,9 @@ fun AppNavGraph(
     onLanguageChange: (String) -> Unit,
     onThemeToggle: () -> Unit
 ) {
-    //val mainViewModel: com.example.moviematch.presentation.viewmodel.MainViewModel = viewModel()
-
     NavHost(navController = navController, startDestination = startDestination) {
 
         composable("main") {
-            //MainScreen(navController = navController)
             MainScreen(
                 navController = navController,
                 isDarkTheme = isDarkTheme,
@@ -88,14 +104,11 @@ fun AppNavGraph(
             )
         }
 
-
         composable(NavRoute.Register.route) {
             val context = LocalContext.current
             val db = remember { AppDatabase.getDatabase(context) }
-
             val repo = remember { UserRepositoryImpl(db.userDao()) }
             val viewModel: RegisterViewModel = viewModel(factory = RegisterViewModelFactory(repo))
-
 
             RegisterScreen(navController = navController, viewModel = viewModel)
         }
@@ -117,7 +130,12 @@ fun AppNavGraph(
 
         composable(NavRoute.EditProfile.route) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: return@composable
-            EditProfileScreen(userId = userId, navController = navController, onThemeToggle = onThemeToggle, onLanguageChange = onLanguageChange)
+            EditProfileScreen(
+                userId = userId,
+                navController = navController,
+                onThemeToggle = onThemeToggle,
+                onLanguageChange = onLanguageChange
+            )
         }
 
         composable(NavRoute.Contacts.route) { backStackEntry ->

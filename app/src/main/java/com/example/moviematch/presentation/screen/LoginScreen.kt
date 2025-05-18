@@ -51,6 +51,23 @@ import com.example.moviematch.presentation.navigation.NavRoute
 import com.example.moviematch.presentation.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * Composable responsible for rendering the login screen UI and managing login logic.
+ *
+ * Features:
+ * - Input fields for user ID and password
+ * - Login button
+ * - Password visibility toggle
+ * - Automatic login with saved credentials
+ * - Password recovery and reset dialogs
+ * - Option to remember login credentials
+ *
+ * @param viewModel The ViewModel handling login state and logic.
+ * @param navController Navigation controller for navigating between screens.
+ * @param prefsName The name of the SharedPreferences file used for storing login data.
+ * @param prefillUserId Optional user ID to prefill the input field (e.g., after registration).
+ * @param skipAutoLogin Whether to skip automatic login (e.g., after registration).
+ */
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
@@ -62,32 +79,40 @@ fun LoginScreen(
     val context = LocalContext.current
     val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
 
+    // Controls suppression of the "remember login" dialog for a specific user
     var suppressRememberDialog by rememberSaveable {
         mutableStateOf(
             prefs.getBoolean("suppressRememberDialog_${prefillUserId.orEmpty()}", false)
         )
     }
 
+    // States tied to ViewModel
     val userId by viewModel.userId.collectAsState()
     val password by viewModel.password.collectAsState()
     val loginSuccess by viewModel.loginSuccess.collectAsState()
 
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
 
+    // UI states
     var isLoginAttemptedAutomatically by remember { mutableStateOf(false) }
-
     var showPassword by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
 
+    // Dialog controls
     var showForgotDialog by rememberSaveable { mutableStateOf(false) }
     var showResetDialog by rememberSaveable { mutableStateOf(false) }
-
     var showRememberDialog by remember { mutableStateOf(false) }
+    var showRememberOptions by rememberSaveable { mutableStateOf(false) }
+
+    // Temporary storage for pending login
     var pendingUserId by remember { mutableStateOf<String?>(null) }
     var pendingPassword by remember { mutableStateOf<String?>(null) }
 
-    var showRememberOptions by rememberSaveable { mutableStateOf(false) }
-
+    /**
+     * Triggers auto-login if credentials are stored and not explicitly skipped.
+     * Also pre-fills the userId after registration.
+     */
     LaunchedEffect(Unit) {
         if (!skipAutoLogin && !isLoginAttemptedAutomatically) {
             val storedUserId = prefs.getString("userId", null)
@@ -103,12 +128,13 @@ fun LoginScreen(
         }
     }
 
-
+    /**
+     * Observes login result and handles navigation or dialog prompting.
+     */
     LaunchedEffect(loginSuccess) {
         loginSuccess?.let { user ->
             val hasStored = !prefs.getString("userId", null).isNullOrBlank() &&
                     !prefs.getString("password", null).isNullOrBlank()
-
             val suppressForThisUser = prefs.getBoolean("suppressRememberDialog_${user.userId}", false)
 
             if (!hasStored && !suppressForThisUser) {
@@ -128,26 +154,33 @@ fun LoginScreen(
         }
     }
 
+    /**
+     * Shows error toast from ViewModel.
+     */
     LaunchedEffect(Unit) {
         viewModel.errorMessageId.collect {
             Toast.makeText(context, context.getString(it), Toast.LENGTH_SHORT).show()
         }
     }
 
+    /**
+     * Displays the simulated SMS code in development.
+     */
     LaunchedEffect(Unit) {
         viewModel.simulatedSmsCode.collect {
             Toast.makeText(context, context.getString(R.string.simulated_sms, it), Toast.LENGTH_LONG).show()
         }
     }
 
+    /**
+     * Resets login state after password reset success.
+     */
     LaunchedEffect(Unit) {
         viewModel.resetSuccess.collect {
             Toast.makeText(context, context.getString(R.string.password_reset_success), Toast.LENGTH_SHORT).show()
             showResetDialog = false
-
             viewModel.onUserIdChange("")
             viewModel.onPasswordChange("")
-
             isLoginAttemptedAutomatically = false
             prefs.edit {
                 remove("userId")
@@ -156,14 +189,18 @@ fun LoginScreen(
         }
     }
 
-
+    /**
+     * Toasts login error messages.
+     */
     LaunchedEffect(Unit) {
         viewModel.loginError.collect { resId ->
             Toast.makeText(context, context.getString(resId), Toast.LENGTH_SHORT).show()
         }
     }
 
-
+    /**
+     * Main Login Screen Layout
+     */
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -171,29 +208,19 @@ fun LoginScreen(
             .verticalScroll(scrollState)
             .systemBarsPadding()
     ) {
+        // User ID input field
         OutlinedTextField(
             value = userId,
             onValueChange = { viewModel.onUserIdChange(it) },
             label = { Text(stringResource(R.string.enter_id)) },
             singleLine = true,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .width(350.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                focusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary,
-                focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedLabelColor = MaterialTheme.colorScheme.onSecondary,
-                cursorColor = MaterialTheme.colorScheme.primary,
-            )
+            modifier = Modifier.align(Alignment.CenterHorizontally).width(350.dp),
+            colors = textFieldColors()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Password input field
         OutlinedTextField(
             value = password,
             onValueChange = { viewModel.onPasswordChange(it) },
@@ -201,29 +228,14 @@ fun LoginScreen(
             singleLine = true,
             visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .width(350.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                focusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary,
-                focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedLabelColor = MaterialTheme.colorScheme.onSecondary,
-                cursorColor = MaterialTheme.colorScheme.primary,
-            )
+            modifier = Modifier.align(Alignment.CenterHorizontally).width(350.dp),
+            colors = textFieldColors()
         )
 
+        // Show password checkbox
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .width(375.dp)
-                .padding(top = 8.dp)
-
+            modifier = Modifier.align(Alignment.CenterHorizontally).width(375.dp).padding(top = 8.dp)
         ) {
             Checkbox(
                 checked = showPassword,
@@ -237,56 +249,41 @@ fun LoginScreen(
             Text(
                 text = stringResource(R.string.show_password),
                 color = MaterialTheme.colorScheme.onSecondary,
-                modifier = Modifier
-                    .clickable { showPassword = !showPassword }
+                modifier = Modifier.clickable { showPassword = !showPassword }
             )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // Login button
         Button(
             onClick = { viewModel.login() },
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .width(350.dp),
+            modifier = Modifier.align(Alignment.CenterHorizontally).width(350.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(
-                stringResource(R.string.login),
-                color = MaterialTheme.colorScheme.onSecondary,
-                fontSize = 18.sp
-            )
+            Text(stringResource(R.string.login), color = MaterialTheme.colorScheme.onSecondary, fontSize = 18.sp)
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
+        // Forgot password button
         TextButton(
             onClick = { showForgotDialog = true },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text(
-                stringResource(R.string.forgot_password),
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 14.sp
-            )
+            Text(stringResource(R.string.forgot_password), color = MaterialTheme.colorScheme.onPrimary, fontSize = 14.sp)
         }
 
-        Spacer(modifier = Modifier.height(0.dp))
-
+        // Navigate to registration
         TextButton(
             onClick = { navController.navigate(NavRoute.Register.route) },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text(
-                stringResource(R.string.create_account),
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 14.sp
-            )
+            Text(stringResource(R.string.create_account), color = MaterialTheme.colorScheme.onPrimary, fontSize = 14.sp)
         }
     }
 
-    val scope = rememberCoroutineScope()
-
+    // Forgot password dialog
     if (showForgotDialog) {
         ForgotPasswordDialog(
             onDismiss = { showForgotDialog = false },
@@ -302,6 +299,7 @@ fun LoginScreen(
         )
     }
 
+    // Password reset dialog
     if (showResetDialog) {
         ResetPasswordDialog(
             onDismiss = { showResetDialog = false },
@@ -309,34 +307,24 @@ fun LoginScreen(
         )
     }
 
+    // Dialog asking user whether to remember login
     if (showRememberDialog && !suppressRememberDialog && pendingUserId != null && pendingPassword != null) {
         AlertDialog(
             onDismissRequest = { showRememberDialog = false },
-            title = {
-                Text(
-                    stringResource(R.string.remember_login_title),
-                    color = MaterialTheme.colorScheme.onSecondary
-                )
-            },
-            text = {
-                Text(
-                    stringResource(R.string.remember_login_msg),
-                    color = MaterialTheme.colorScheme.onSecondary
-                )
-            },
+            title = { Text(stringResource(R.string.remember_login_title), color = MaterialTheme.colorScheme.onSecondary) },
+            text = { Text(stringResource(R.string.remember_login_msg), color = MaterialTheme.colorScheme.onSecondary) },
             confirmButton = {
                 TextButton(onClick = {
-                    context.getSharedPreferences(prefsName, Context.MODE_PRIVATE).edit {
+                    prefs.edit {
                         putString("userId", pendingUserId)
-                            .putString("password", pendingPassword)
+                        putString("password", pendingPassword)
                     }
                     Toast.makeText(context, context.getString(R.string.welcome_back), Toast.LENGTH_SHORT).show()
                     navController.navigate(NavRoute.Menu.createRoute(pendingUserId!!)) {
                         popUpTo(NavRoute.Login.route) { inclusive = true }
                     }
                 }) {
-                    Text(stringResource(R.string.yes),
-                        color = MaterialTheme.colorScheme.background)
+                    Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
@@ -346,12 +334,12 @@ fun LoginScreen(
                 }) {
                     Text(stringResource(R.string.no), color = MaterialTheme.colorScheme.background)
                 }
-
             },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
         )
     }
 
+    // Dialog for future remember preferences
     if (showRememberOptions) {
         AlertDialog(
             onDismissRequest = { showRememberOptions = false },
@@ -378,29 +366,24 @@ fun LoginScreen(
                         popUpTo(NavRoute.Login.route) { inclusive = true }
                     }
                 }) {
-                    Text(stringResource(R.string.think_about_it),
-                        color = MaterialTheme.colorScheme.background)
+                    Text(stringResource(R.string.think_about_it), color = MaterialTheme.colorScheme.background)
                 }
             },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
         )
     }
-
 }
 
-
+/**
+ * A reusable dialog for submitting a username to receive a password recovery code.
+ */
 @Composable
 fun ForgotPasswordDialog(onDismiss: () -> Unit, onSendCode: (String) -> Unit) {
     var username by rememberSaveable { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = {},
-        title = {
-            Text(
-                text = stringResource(R.string.forgot_password_title),
-                color = MaterialTheme.colorScheme.onSecondary
-            )
-        },
+        title = { Text(text = stringResource(R.string.forgot_password_title), color = MaterialTheme.colorScheme.onSecondary) },
         text = {
             OutlinedTextField(
                 value = username,
@@ -408,38 +391,26 @@ fun ForgotPasswordDialog(onDismiss: () -> Unit, onSendCode: (String) -> Unit) {
                 label = { Text(stringResource(R.string.forgot_username_label)) },
                 singleLine = true,
                 modifier = Modifier.width(350.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                    focusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary,
-                    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onSecondary,
-                    cursorColor = MaterialTheme.colorScheme.primary,
-                )
+                colors = textFieldColors()
             )
         },
         confirmButton = {
             TextButton(onClick = { onSendCode(username.trim()) }) {
-                Text(
-                    text = stringResource(R.string.send_code),
-                    //color = MaterialTheme.colorScheme.primary)
-                    color = MaterialTheme.colorScheme.background)
+                Text(stringResource(R.string.send_code), color = MaterialTheme.colorScheme.background)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(
-                    text = stringResource(R.string.cancel),
-                    color = MaterialTheme.colorScheme.background)
+                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.background)
             }
         },
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
     )
 }
 
+/**
+ * A reusable dialog for resetting password with verification code and new password.
+ */
 @Composable
 fun ResetPasswordDialog(onDismiss: () -> Unit, onConfirm: (String, String) -> Unit) {
     var code by rememberSaveable { mutableStateOf("") }
@@ -448,12 +419,7 @@ fun ResetPasswordDialog(onDismiss: () -> Unit, onConfirm: (String, String) -> Un
 
     AlertDialog(
         onDismissRequest = {},
-        title = {
-            Text(
-                text = stringResource(R.string.reset_password_title),
-                color = MaterialTheme.colorScheme.onSecondary
-            )
-        },
+        title = { Text(stringResource(R.string.reset_password_title), color = MaterialTheme.colorScheme.onSecondary) },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 OutlinedTextField(
@@ -462,17 +428,7 @@ fun ResetPasswordDialog(onDismiss: () -> Unit, onConfirm: (String, String) -> Un
                     label = { Text(stringResource(R.string.verification_code)) },
                     singleLine = true,
                     modifier = Modifier.width(350.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                        focusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                        focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                        unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary,
-                        focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSecondary,
-                        cursorColor = MaterialTheme.colorScheme.primary,
-                    )
+                    colors = textFieldColors()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
@@ -482,25 +438,11 @@ fun ResetPasswordDialog(onDismiss: () -> Unit, onConfirm: (String, String) -> Un
                     singleLine = true,
                     visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier.width(350.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                        focusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                        focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                        unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary,
-                        focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSecondary,
-                        cursorColor = MaterialTheme.colorScheme.primary,
-                    )
+                    colors = textFieldColors()
                 )
-
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .width(375.dp)
-                        .padding(top = 8.dp)
+                    modifier = Modifier.align(Alignment.CenterHorizontally).width(375.dp).padding(top = 8.dp)
                 ) {
                     Checkbox(
                         checked = showPassword,
@@ -514,23 +456,36 @@ fun ResetPasswordDialog(onDismiss: () -> Unit, onConfirm: (String, String) -> Un
                     Text(
                         text = stringResource(R.string.show_password),
                         color = MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier
-                            .clickable { showPassword = !showPassword }
+                        modifier = Modifier.clickable { showPassword = !showPassword }
                     )
                 }
             }
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(code.trim(), newPassword.trim()) }) {
-                Text(text = stringResource(R.string.confirm),
-                    color = MaterialTheme.colorScheme.background)
+                Text(stringResource(R.string.confirm), color = MaterialTheme.colorScheme.background)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.cancel),
-                    color = MaterialTheme.colorScheme.background)
+                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.background)
             }
         }
     )
 }
+
+/**
+ * Provides consistent styling for all OutlinedTextFields across the login screen.
+ */
+@Composable
+private fun textFieldColors() = TextFieldDefaults.colors(
+    focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+    unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+    focusedTextColor = MaterialTheme.colorScheme.onSecondary,
+    unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
+    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary,
+    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+    unfocusedLabelColor = MaterialTheme.colorScheme.onSecondary,
+    cursorColor = MaterialTheme.colorScheme.primary,
+)

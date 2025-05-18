@@ -27,6 +27,16 @@ import androidx.navigation.NavController
 import com.example.moviematch.R
 import com.example.moviematch.presentation.viewmodel.MenuViewModel
 
+/**
+ * Composable function displaying the main menu screen for the user.
+ *
+ * Provides navigation buttons to edit profile, contacts, preferences,
+ * find a movie match, and logout from the app.
+ *
+ * @param userId The ID of the currently logged-in user.
+ * @param navController Navigation controller used to move between screens.
+ * @param viewModel ViewModel that handles navigation logic for the menu.
+ */
 @Composable
 fun MenuScreen(
     userId: String,
@@ -42,8 +52,10 @@ fun MenuScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Displays the image at the top of the menu
         MovieImage()
 
+        // Menu navigation buttons
         MenuButton(
             label = stringResource(R.string.edit_profile),
             onClick = { viewModel.navigateToEditProfile(navController, userId) }
@@ -67,6 +79,12 @@ fun MenuScreen(
     }
 }
 
+/**
+ * Reusable composable button used in the main menu screen.
+ *
+ * @param label Text displayed on the button.
+ * @param onClick Action to execute when the button is clicked.
+ */
 @Composable
 fun MenuButton(label: String, onClick: () -> Unit) {
     Button(
@@ -74,7 +92,7 @@ fun MenuButton(label: String, onClick: () -> Unit) {
         modifier = Modifier
             .padding(vertical = 8.dp)
             .width(350.dp),
-    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
         Text(
             text = label,
@@ -84,6 +102,11 @@ fun MenuButton(label: String, onClick: () -> Unit) {
     }
 }
 
+/**
+ * Composable that displays a themed image at the top of the MenuScreen.
+ *
+ * Currently loads a static image representing the movie theme.
+ */
 @Composable
 fun MovieImage() {
     Box(
@@ -94,9 +117,7 @@ fun MovieImage() {
     ) {
         AsyncImage(
             model = "https://www.clker.com/cliparts/r/Q/s/z/K/W/lights-camera-action-hollywood-md.png",
-            contentDescription = null,
-            //modifier = Modifier.width(250.dp)
+            contentDescription = null
         )
     }
 }
-

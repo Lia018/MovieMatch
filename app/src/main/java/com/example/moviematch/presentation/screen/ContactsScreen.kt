@@ -45,27 +45,41 @@ import com.example.moviematch.data.repository.UserRepositoryImpl
 import com.example.moviematch.presentation.factory.ContactsViewModelFactory
 import com.example.moviematch.presentation.viewmodel.ContactsViewModel
 
+/**
+ * Displays the screen for managing user contacts.
+ *
+ * Users can add contacts by entering a user ID, view their list of contacts, and
+ * perform actions like editing or deleting existing ones.
+ *
+ * @param userId The current logged-in user's ID.
+ * @param navController Navigation controller to allow returning to the main menu.
+ */
 @Composable
 fun ContactsScreen(userId: String, navController: NavController) {
     val context = LocalContext.current
 
+    // Initialize database and repositories
     val db = AppDatabase.getDatabase(context)
     val contactRepository = remember { ContactRepositoryImpl(db.contactDao()) }
     val userRepository = remember { UserRepositoryImpl(db.userDao()) }
+
+    // ViewModel setup with factory
     val viewModel: ContactsViewModel = viewModel(
         factory = ContactsViewModelFactory(contactRepository, userRepository, userId)
     )
 
+    // UI state holders
     val contactInput by viewModel.contactInput.collectAsState()
-
     val contacts by viewModel.contacts.collectAsState()
     val selectedContact by viewModel.selectedContact.collectAsState()
 
+    // Dialog visibility flags
     val showInitialDialog = remember { derivedStateOf { selectedContact != null } }
     var showActionDialog by rememberSaveable { mutableStateOf(false) }
     var showEditDialog by rememberSaveable { mutableStateOf(false) }
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
+    // Load initial data and observe events
     LaunchedEffect(Unit) {
         viewModel.loadContacts()
     }
@@ -76,6 +90,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
         }
     }
 
+    // Main UI layout
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,6 +98,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
             .systemBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Input for adding a contact by user ID
         OutlinedTextField(
             value = contactInput,
             onValueChange = { viewModel.onContactInputChange(it.text) },
@@ -104,6 +120,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Button to add a contact
         Button(
             onClick = viewModel::addContact,
             modifier = Modifier.width(350.dp),
@@ -114,6 +131,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // List of existing contacts
         LazyColumn(modifier = Modifier.weight(1f)) {
             itemsIndexed(contacts) { _, contact ->
                 val display = contact.displayName.ifBlank { contact.contactId }
@@ -130,6 +148,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // Navigation button back to the main menu
         Button(
             onClick = { navController.navigate("menu/$userId") },
             modifier = Modifier.width(350.dp),
@@ -139,6 +158,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
         }
     }
 
+    // Dialog: Contact selected (initial)
     if (showInitialDialog.value) {
         AlertDialog(
             onDismissRequest = viewModel::clearDialogs,
@@ -160,6 +180,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
         )
     }
 
+    // Dialog: Choose action (edit/delete)
     if (showActionDialog) {
         AlertDialog(
             onDismissRequest = { showActionDialog = false },
@@ -187,6 +208,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
         )
     }
 
+    // Dialog: Edit contact
     if (showEditDialog) {
         var tempName by rememberSaveable(selectedContact?.contactId) {
             mutableStateOf(selectedContact?.displayName ?: "")
@@ -233,6 +255,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
         )
     }
 
+    // Dialog: Delete contact confirmation
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
