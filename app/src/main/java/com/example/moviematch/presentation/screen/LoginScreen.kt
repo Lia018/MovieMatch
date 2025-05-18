@@ -307,7 +307,7 @@ fun LoginScreen(
     }
 
     // Dialog asking user whether to remember login
-    if (showRememberDialog && !suppressRememberDialog && pendingUserId != null && pendingPassword != null) {
+    if (showRememberDialog && !suppressRememberDialog) {
         AlertDialog(
             onDismissRequest = { showRememberDialog = false },
             title = { Text(context.getString(R.string.remember_login_title), color = MaterialTheme.colorScheme.onSecondary) },
@@ -346,7 +346,7 @@ fun LoginScreen(
             text = { Text(context.getString(R.string.remember_decision_msg)) },
             confirmButton = {
                 TextButton(onClick = {
-                    prefs.edit { putBoolean("suppressRememberDialog_${pendingUserId!!}", true) }
+                    prefs.edit { putBoolean("suppressRememberDialog_${pendingUserId}", true) }
                     suppressRememberDialog = true
                     showRememberOptions = false
                     Toast.makeText(context, context.getString(R.string.welcome_back), Toast.LENGTH_SHORT).show()
