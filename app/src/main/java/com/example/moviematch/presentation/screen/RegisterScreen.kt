@@ -26,12 +26,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -57,7 +56,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
     // Collect state from ViewModel
     val name by viewModel.name.collectAsState()
     val password by viewModel.password.collectAsState()
-    var showPassword by remember { mutableStateOf(false) }
+    var showPassword by rememberSaveable { mutableStateOf(false) }
 
     /**
      * Observes and displays error messages emitted from the ViewModel using Toasts.
@@ -100,19 +99,19 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
         OutlinedTextField(
             value = name,
             onValueChange = viewModel::onNameChange,
-            label = { Text(stringResource(R.string.enter_name)) },
+            label = { Text(context.getString(R.string.enter_name)) },
             singleLine = true,
             modifier = Modifier.width(350.dp),
             colors = themedTextFieldColors()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Password input field with optional visibility toggle
         OutlinedTextField(
             value = password,
             onValueChange = viewModel::onPasswordChange,
-            label = { Text(stringResource(R.string.enter_password)) },
+            label = { Text(context.getString(R.string.enter_password)) },
             singleLine = true,
             visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.width(350.dp),
@@ -124,8 +123,8 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .width(375.dp)
-                .padding(top = 8.dp)
+                .width(350.dp)
+                .padding(top = 12.dp)
         ) {
             Checkbox(
                 checked = showPassword,
@@ -137,7 +136,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
                 )
             )
             Text(
-                text = stringResource(R.string.show_password),
+                text = context.getString(R.string.show_password),
                 color = MaterialTheme.colorScheme.onSecondary,
                 modifier = Modifier.clickable { showPassword = !showPassword }
             )
@@ -152,7 +151,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                text = stringResource(R.string.register),
+                text = context.getString(R.string.register),
                 color = MaterialTheme.colorScheme.onSecondary,
                 fontSize = 18.sp
             )
@@ -170,9 +169,9 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text(
-                text = stringResource(R.string.already_have_account),
+                text = context.getString(R.string.already_have_account),
                 color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 14.sp
+                fontSize = 16.sp
             )
         }
     }

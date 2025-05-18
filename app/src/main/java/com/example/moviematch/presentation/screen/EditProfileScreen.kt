@@ -43,7 +43,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
@@ -73,6 +72,7 @@ import com.example.moviematch.presentation.viewmodel.EditProfileViewModel
  *
  * @param userId The ID of the currently logged-in user.
  * @param navController Used to navigate to other screens.
+ * @param currentLanguage Language code currently active ("sk", "en", etc.).
  * @param onThemeToggle Callback invoked when the theme is toggled.
  * @param onLanguageChange Callback invoked when the language is changed.
  */
@@ -80,6 +80,7 @@ import com.example.moviematch.presentation.viewmodel.EditProfileViewModel
 fun EditProfileScreen(
     userId: String,
     navController: NavController,
+    currentLanguage: String,
     onThemeToggle: () -> Unit,
     onLanguageChange: (String) -> Unit
 ) {
@@ -105,7 +106,6 @@ fun EditProfileScreen(
     // UI state
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
     var showClearDataDialog by rememberSaveable { mutableStateOf(false) }
-    val selectedLanguage = remember { mutableStateOf("en") }
 
     val prefs = context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
     val storedUserId = prefs.getString("userId", null)
@@ -132,36 +132,36 @@ fun EditProfileScreen(
         OutlinedTextField(
             value = username,
             onValueChange = { viewModel.username.value = it },
-            label = { Text(stringResource(R.string.name)) },
+            label = { Text(context.getString(R.string.name)) },
             singleLine = true,
             modifier = Modifier.width(350.dp),
             colors = customTextFieldColors()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        ActionButton(stringResource(R.string.save_name)) {
+        ActionButton(context.getString(R.string.save_name)) {
             viewModel.updateUsername()
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Obfuscated or shown user ID
         OutlinedTextField(
             value = if (showId) userId else "••••••",
             onValueChange = {},
             readOnly = true,
-            label = { Text(stringResource(R.string.user_id_label)) },
+            label = { Text(context.getString(R.string.user_id_label)) },
             singleLine = true,
             modifier = Modifier.width(350.dp),
             colors = customTextFieldColors()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Tap and hold to reveal user ID
         Text(
-            text = stringResource(R.string.show_id_hold),
+            text = context.getString(R.string.show_id_hold),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
             modifier = Modifier
@@ -186,52 +186,51 @@ fun EditProfileScreen(
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Password change inputs
         PasswordField(
-            label = stringResource(R.string.enter_current_password),
+            label = context.getString(R.string.enter_current_password),
             value = currentPass,
             onValueChange = { viewModel.currentPassword.value = it },
             isVisible = showOld,
             onToggleVisibility = { viewModel.showOldPassword.value = !showOld }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         PasswordField(
-            label = stringResource(R.string.enter_new_password),
+            label = context.getString(R.string.enter_new_password),
             value = newPass,
             onValueChange = { viewModel.newPassword.value = it },
             isVisible = showNew,
             onToggleVisibility = { viewModel.showNewPassword.value = !showNew }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        ActionButton(stringResource(R.string.change_password)) {
+        ActionButton(context.getString(R.string.change_password)) {
             viewModel.updatePassword { newPassword ->
                 prefs.edit { putString("password", newPassword) }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Language toggle buttons
         Row(
             modifier = Modifier
                 .width(350.dp)
-                .padding(vertical = 8.dp),
+                .padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(stringResource(R.string.choose_language))
+            Text(context.getString(R.string.choose_language))
 
             languages.forEach { langCode ->
-                val isSelected = selectedLanguage.value == langCode
+                val isSelected = currentLanguage == langCode
                 Button(
                     onClick = {
-                        selectedLanguage.value = langCode
                         prefs.edit { putString("lang", langCode) }
                         onLanguageChange(langCode)
                     },
@@ -250,9 +249,9 @@ fun EditProfileScreen(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .width(350.dp)
-                .padding(vertical = 8.dp)
+                .padding(vertical = 12.dp)
         ) {
-            Text(text = stringResource(R.string.theme))
+            Text(text = context.getString(R.string.theme))
             Switch(
                 checked = isDark,
                 modifier = Modifier.scale(1.3f),
@@ -263,10 +262,10 @@ fun EditProfileScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Clear login data
-        ActionButton(stringResource(R.string.clear_login_data)) {
+        ActionButton(context.getString(R.string.clear_login_data)) {
             if (storedUserId != null && storedUserId == userId) {
                 showClearDataDialog = true
             } else {
@@ -274,21 +273,23 @@ fun EditProfileScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Delete account
-        ActionButton(stringResource(R.string.delete_account)) {
+        ActionButton(context.getString(R.string.delete_account)) {
             showDeleteDialog = true
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         Button(
             onClick = { navController.navigate("menu/$userId") },
             modifier = Modifier.width(350.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(stringResource(R.string.back_to_menu), fontSize = 18.sp, color = MaterialTheme.colorScheme.onSecondary)
+            Text(text = context.getString(R.string.back_to_menu),
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.onSecondary)
         }
     }
 
@@ -296,8 +297,8 @@ fun EditProfileScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text(stringResource(R.string.confirm_delete_account_title)) },
-            text = { Text(stringResource(R.string.confirm_delete_account_msg)) },
+            title = { Text(context.getString(R.string.confirm_delete_account_title)) },
+            text = { Text(context.getString(R.string.confirm_delete_account_msg)) },
             confirmButton = {
                 TextButton(onClick = {
                     showDeleteDialog = false
@@ -310,12 +311,12 @@ fun EditProfileScreen(
                         }
                     )
                 }) {
-                    Text(stringResource(R.string.yes_delete), color = MaterialTheme.colorScheme.background)
+                    Text(context.getString(R.string.yes_delete), color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text(stringResource(R.string.no_keep), color = MaterialTheme.colorScheme.background)
+                    Text(context.getString(R.string.no_keep), color = MaterialTheme.colorScheme.background)
                 }
             },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -326,8 +327,8 @@ fun EditProfileScreen(
     if (showClearDataDialog) {
         AlertDialog(
             onDismissRequest = { showClearDataDialog = false },
-            title = { Text(stringResource(R.string.clear_data_title)) },
-            text = { Text(stringResource(R.string.clear_data_msg)) },
+            title = { Text(context.getString(R.string.clear_data_title)) },
+            text = { Text(context.getString(R.string.clear_data_msg)) },
             confirmButton = {
                 TextButton(onClick = {
                     showClearDataDialog = false
@@ -340,12 +341,12 @@ fun EditProfileScreen(
                         }
                     )
                 }) {
-                    Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.background)
+                    Text(context.getString(R.string.yes), color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showClearDataDialog = false }) {
-                    Text(stringResource(R.string.no), color = MaterialTheme.colorScheme.background)
+                    Text(context.getString(R.string.no), color = MaterialTheme.colorScheme.background)
                 }
             },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -364,6 +365,8 @@ fun PasswordField(
     isVisible: Boolean,
     onToggleVisibility: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         OutlinedTextField(
             value = value,
@@ -380,7 +383,7 @@ fun PasswordField(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .width(375.dp)
-                .padding(top = 8.dp)
+                .padding(top = 12.dp)
         ) {
             Checkbox(
                 checked = isVisible,
@@ -392,7 +395,7 @@ fun PasswordField(
                 )
             )
             Text(
-                text = stringResource(R.string.show_password),
+                text = context.getString(R.string.show_password),
                 color = MaterialTheme.colorScheme.onSecondary,
                 modifier = Modifier.clickable { onToggleVisibility() }
             )

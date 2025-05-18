@@ -1,5 +1,6 @@
 package com.example.moviematch.presentation.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,8 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +40,7 @@ import com.example.moviematch.R
  *
  * @param navController Used to navigate to other screens in the app.
  * @param isDarkTheme Boolean indicating whether the current theme is dark.
+ * @param currentLanguage Language code currently active ("sk", "en", etc.).
  * @param onLanguageChange Callback to be invoked when a new language is selected.
  * @param onThemeToggle Callback to be invoked when theme toggle is triggered.
  */
@@ -46,12 +48,14 @@ import com.example.moviematch.R
 fun MainScreen(
     navController: NavController,
     isDarkTheme: Boolean,
+    currentLanguage: String,
     onLanguageChange: (String) -> Unit,
     onThemeToggle: () -> Unit,
 ) {
     // Select appropriate icon based on current theme
     //https://emojipedia.org/animated-noto-color-emoji/15.0/light-bulb
     val themeIcon = if (!isDarkTheme) R.drawable.light_bulb_on else R.drawable.light_bulb_off
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -71,15 +75,19 @@ fun MainScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Left box for Slovak language selection
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                 Text(
-                    text = stringResource(id = R.string.language_sk),
+                    text = context.getString(R.string.language_sk),
                     color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.clickable { onLanguageChange("sk") },
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    modifier = Modifier.clickable {
+                        if (currentLanguage != "sk") onLanguageChange("sk")
+                        else Toast.makeText(
+                            context,
+                            context.getString(R.string.language_already_set),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 )
             }
 
@@ -98,15 +106,19 @@ fun MainScreen(
             }
 
             // Right box for English language selection
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                 Text(
-                    text = stringResource(id = R.string.language_en),
+                    text = context.getString(R.string.language_en),
                     color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.clickable { onLanguageChange("en") },
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    modifier = Modifier.clickable {
+                        if (currentLanguage != "en") onLanguageChange("en")
+                        else Toast.makeText(
+                            context,
+                            context.getString(R.string.language_already_set),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 )
             }
         }
@@ -116,7 +128,7 @@ fun MainScreen(
 
         // App title displayed prominently in the center
         Text(
-            text = stringResource(id = R.string.app_name),
+            text = context.getString(R.string.app_name),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onPrimary,
@@ -136,13 +148,13 @@ fun MainScreen(
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                text = stringResource(id = R.string.login),
+                text = context.getString(R.string.login),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         /**
          * Button to navigate to the registration screen
@@ -155,13 +167,13 @@ fun MainScreen(
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                text = stringResource(id = R.string.register),
+                text = context.getString(R.string.register),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }
 
         // Final spacer to maintain consistent bottom padding
-        Spacer(modifier = Modifier.height(16.dp).weight(1f))
+        Spacer(modifier = Modifier.height(12.dp).weight(1f))
     }
 }

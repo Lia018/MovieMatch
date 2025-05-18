@@ -33,8 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -102,7 +102,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
         OutlinedTextField(
             value = contactInput,
             onValueChange = { viewModel.onContactInputChange(it.text) },
-            label = { Text(stringResource(R.string.enter_user_id)) },
+            label = { Text(context.getString(R.string.enter_user_id)) },
             singleLine = true,
             modifier = Modifier.width(350.dp),
             colors = TextFieldDefaults.colors(
@@ -118,7 +118,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
             )
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Button to add a contact
         Button(
@@ -126,7 +126,9 @@ fun ContactsScreen(userId: String, navController: NavController) {
             modifier = Modifier.width(350.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(stringResource(R.string.add_contact), color = MaterialTheme.colorScheme.onSecondary)
+            Text(context.getString(R.string.add_contact),
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.onSecondary)
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -141,7 +143,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
                     modifier = Modifier
                         .width(350.dp)
                         .clickable { viewModel.selectContact(contact) }
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 12.dp)
                 )
             }
         }
@@ -154,7 +156,9 @@ fun ContactsScreen(userId: String, navController: NavController) {
             modifier = Modifier.width(350.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(stringResource(R.string.back_to_menu), color = MaterialTheme.colorScheme.onSecondary)
+            Text(context.getString(R.string.back_to_menu),
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.onSecondary)
         }
     }
 
@@ -162,17 +166,17 @@ fun ContactsScreen(userId: String, navController: NavController) {
     if (showInitialDialog.value) {
         AlertDialog(
             onDismissRequest = viewModel::clearDialogs,
-            title = { Text(stringResource(R.string.contact_title, selectedContact?.displayName ?: "")) },
-            text = { Text(stringResource(R.string.contact_selected, selectedContact?.contactId ?: "")) },
+            title = { Text(context.getString(R.string.contact_title, selectedContact?.displayName ?: "")) },
+            text = { Text(context.getString(R.string.contact_selected, selectedContact?.contactId ?: "")) },
             confirmButton = {
                 TextButton(onClick = { showActionDialog = true }) {
-                    Text(text = stringResource(R.string.edit_or_delete),
+                    Text(text = context.getString(R.string.edit_or_delete),
                         color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
                 TextButton(onClick = viewModel::clearDialogs) {
-                    Text(text = stringResource(R.string.cancel),
+                    Text(text = context.getString(R.string.cancel),
                         color = MaterialTheme.colorScheme.background)
                 }
             },
@@ -184,14 +188,14 @@ fun ContactsScreen(userId: String, navController: NavController) {
     if (showActionDialog) {
         AlertDialog(
             onDismissRequest = { showActionDialog = false },
-            title = { Text(stringResource(R.string.choose_action)) },
-            text = { Text(stringResource(R.string.edit_or_delete_question)) },
+            title = { Text(context.getString(R.string.choose_action)) },
+            text = { Text(context.getString(R.string.edit_or_delete_question)) },
             confirmButton = {
                 TextButton(onClick = {
                     showActionDialog = false
                     showEditDialog = true
                 }) {
-                    Text(text = stringResource(R.string.edit),
+                    Text(text = context.getString(R.string.edit),
                         color = MaterialTheme.colorScheme.background)
                 }
             },
@@ -200,7 +204,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
                     showActionDialog = false
                     showDeleteDialog = true
                 }) {
-                    Text(text = stringResource(R.string.delete),
+                    Text(text = context.getString(R.string.delete),
                         color = MaterialTheme.colorScheme.background)
                 }
             },
@@ -216,15 +220,15 @@ fun ContactsScreen(userId: String, navController: NavController) {
 
         AlertDialog(
             onDismissRequest = { showEditDialog = false },
-            title = { Text(stringResource(R.string.edit_contact)) },
+            title = { Text(context.getString(R.string.edit_contact)) },
             text = {
                 Column {
-                    Text(stringResource(R.string.contact_id_label, selectedContact?.contactId ?: ""))
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(context.getString(R.string.contact_id_label, selectedContact?.contactId ?: ""))
+                    Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = tempName,
                         onValueChange = { tempName = it },
-                        label = { Text(stringResource(R.string.contact_name)) },
+                        label = { Text(context.getString(R.string.contact_name)) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -236,7 +240,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
                     showEditDialog = false
                 }) {
                     Text(
-                        text = stringResource(R.string.save),
+                        text = context.getString(R.string.save),
                         color = MaterialTheme.colorScheme.background
                     )
                 }
@@ -246,7 +250,7 @@ fun ContactsScreen(userId: String, navController: NavController) {
                     showEditDialog = false
                 }) {
                     Text(
-                        text = stringResource(R.string.cancel),
+                        text = context.getString(R.string.cancel),
                         color = MaterialTheme.colorScheme.background
                     )
                 }
@@ -259,22 +263,22 @@ fun ContactsScreen(userId: String, navController: NavController) {
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text(stringResource(R.string.delete_contact)) },
+            title = { Text(context.getString(R.string.delete_contact)) },
             text = {
-                Text(stringResource(R.string.confirm_delete_contact, selectedContact?.contactId ?: ""))
+                Text(context.getString(R.string.confirm_delete_contact, selectedContact?.contactId ?: ""))
             },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteSelectedContact()
                     showDeleteDialog = false
                 }) {
-                    Text(text = stringResource(R.string.yes_delete),
+                    Text(text = context.getString(R.string.yes_delete),
                         color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text(text = stringResource(R.string.cancel),
+                    Text(text = context.getString(R.string.cancel),
                         color = MaterialTheme.colorScheme.background)
                 }
             },

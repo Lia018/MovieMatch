@@ -37,9 +37,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -63,6 +63,7 @@ import com.example.moviematch.presentation.viewmodel.MatchViewModel
 @Composable
 fun MatchScreen(userId: String, navController: NavController) {
     val context = LocalContext.current
+    val application = context.applicationContext as android.app.Application
 
     // Initialize repositories and database access
     val db = AppDatabase.getDatabase(context)
@@ -72,11 +73,11 @@ fun MatchScreen(userId: String, navController: NavController) {
 
     // Create the ViewModel using the factory
     val viewModel: MatchViewModel = viewModel(
-        factory = MatchViewModelFactory(userId, movieRepo, contactRepo, userRepo)
+        factory = MatchViewModelFactory(application, userId, movieRepo, contactRepo, userRepo)
     )
 
     val genres by viewModel.availableGenres.collectAsState()
-    val allOptionLabel = stringResource(R.string.all_preferences)
+    val allOptionLabel = context.getString(R.string.all_preferences)
 
     // Add "All" option at the beginning of the genre list
     val allGenresWithAllOption = remember(genres) {
@@ -139,6 +140,7 @@ fun MatchScreen(userId: String, navController: NavController) {
                 onDismiss = { viewModel.resetMatchResult() },
                 onAddToContacts = {
                     viewModel.addToContacts(matchedUser)
+                    viewModel.inputUserId.value = ""
                     viewModel.resetMatchResult()
                 }
             )
@@ -155,6 +157,7 @@ fun MatchScreen(userId: String, navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
             .systemBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -162,7 +165,7 @@ fun MatchScreen(userId: String, navController: NavController) {
         OutlinedTextField(
             value = inputUserId,
             onValueChange = { viewModel.inputUserId.value = it },
-            label = { Text(stringResource(R.string.enter_user_id)) },
+            label = { Text(context.getString(R.string.enter_user_id)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.width(350.dp),
             colors = TextFieldDefaults.colors(
@@ -185,7 +188,9 @@ fun MatchScreen(userId: String, navController: NavController) {
             onClick = { viewModel.findDirectMatch() },
             modifier = Modifier.width(350.dp),
         ) {
-            Text(stringResource(R.string.find_match))
+            Text(text = context.getString(R.string.find_match),
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.onSecondary)
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -201,7 +206,9 @@ fun MatchScreen(userId: String, navController: NavController) {
             },
             modifier = Modifier.width(350.dp),
         ) {
-            Text(stringResource(R.string.find_match_with_contact))
+            Text(text = context.getString(R.string.find_match_with_contact),
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.onSecondary)
         }
 
         if (showDialog) {
@@ -219,10 +226,18 @@ fun MatchScreen(userId: String, navController: NavController) {
 
         // Button to open genre selection dialog
         Button(
-            onClick = { showGenreDialog = true },
+            onClick = {
+                if (genres.isEmpty()) {
+                    Toast.makeText(context, context.getString(R.string.no_preferences), Toast.LENGTH_SHORT).show()
+                } else {
+                    showGenreDialog = true
+                }
+            },
             modifier = Modifier.width(350.dp),
         ) {
-            Text(stringResource(R.string.genre_feeling_prompt))
+            Text(text = context.getString(R.string.genre_feeling_prompt),
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.onSecondary)
         }
 
         if (showGenreDialog) {
@@ -231,14 +246,11 @@ fun MatchScreen(userId: String, navController: NavController) {
                 selectedStates = selectedStates,
                 allOptionLabel = allOptionLabel,
                 onConfirm = { selected ->
-                    if (selected.isEmpty()) {
-                        Toast.makeText(context, context.getString(R.string.no_genres_selected), Toast.LENGTH_SHORT).show()
-                    } else {
-                        viewModel.selectedGenres.value = selected
-                        viewModel.saveSelectedGenres()
-                        showGenreDialog = false
-                        Toast.makeText(context, context.getString(R.string.genres_selected), Toast.LENGTH_SHORT).show()
-                    }
+                    viewModel.selectedGenres.value = selected
+                    viewModel.saveSelectedGenres()
+                    showGenreDialog = false
+                    Toast.makeText(context, context.getString(R.string.genres_selected), Toast.LENGTH_SHORT).show()
+
                 },
                 onDismiss = { showGenreDialog = false }
             )
@@ -254,10 +266,12 @@ fun MatchScreen(userId: String, navController: NavController) {
             },
             modifier = Modifier.width(350.dp),
         ) {
-            Text(stringResource(R.string.back_to_menu))
+            Text(text = context.getString(R.string.back_to_menu),
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.onSecondary)
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(48.dp))
 
         // Display a movie-related image
         AnotherMovieImage()
@@ -322,7 +336,8 @@ fun MatchResultDialog(
 
             // Called whenever the sensor's values (x, y, z) change.
             override fun onSensorChanged(event: android.hardware.SensorEvent?) {
-                val now = System.currentTimeMillis() // Get the current system time in milliseconds
+                // Get the current system time in milliseconds
+                val now = System.currentTimeMillis()
 
                 // Ensure the event is not null and contains at least three values (x, y, z)
                 if (event != null && event.values.size >= 3) {
@@ -366,17 +381,19 @@ fun MatchResultDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.match_result)) },
+        title = { Text(context.getString(R.string.match_result)) },
         text = {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                Text(stringResource(R.string.match_found, matchedDisplayName, ""))
-                Spacer(modifier = Modifier.height(8.dp))
+            Column(modifier = Modifier
+                .height(400.dp)
+                .verticalScroll(rememberScrollState())) {
+                Text(context.getString(R.string.match_found, matchedDisplayName, ""))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Display the list of common movies, highlight if selected
                 Column {
                     sortedMovies.forEach { movie ->
                         val displayText = if (movie == highlightedMovie) {
-                            stringResource(R.string.highlighted_movie_format, movie)
+                            context.getString(R.string.highlighted_movie_format, movie)
                         } else {
                             movie
                         }
@@ -391,12 +408,12 @@ fun MatchResultDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.ok), color = MaterialTheme.colorScheme.background)
+                Text(text = context.getString(R.string.ok), color = MaterialTheme.colorScheme.background)
             }
         },
         dismissButton = {
             TextButton(onClick = onAddToContacts) {
-                Text(text = stringResource(R.string.add_to_contacts), color = MaterialTheme.colorScheme.background)
+                Text(text = context.getString(R.string.add_to_contacts), color = MaterialTheme.colorScheme.background)
             }
         },
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -491,17 +508,19 @@ fun GroupMatchResultDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.match_result)) },
+        title = { Text(context.getString(R.string.match_result)) },
         text = {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                Text(stringResource(R.string.group_match_found, ""))
-                Spacer(modifier = Modifier.height(8.dp))
+            Column(modifier = Modifier
+                .height(400.dp)
+                .verticalScroll(rememberScrollState())) {
+                Text(context.getString(R.string.group_match_found, ""))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // List of matched movies
                 Column {
                     sortedMovies.forEach { movie ->
                         val displayText = if (movie == highlightedMovie) {
-                            stringResource(R.string.highlighted_movie_format, movie)
+                            context.getString(R.string.highlighted_movie_format, movie)
                         } else {
                             movie
                         }
@@ -516,7 +535,7 @@ fun GroupMatchResultDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.ok), color = MaterialTheme.colorScheme.background)
+                Text(text = context.getString(R.string.ok), color = MaterialTheme.colorScheme.background)
             }
         },
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -541,9 +560,11 @@ fun MultiContactSelectionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.select_contacts_title)) },
+        title = { Text(context.getString(R.string.select_contacts_title)) },
         text = {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Column(modifier = Modifier
+                .height(400.dp)
+                .verticalScroll(rememberScrollState())) {
                 // Display each contact with checkbox
                 allContacts.forEachIndexed { index, contact ->
                     Row(
@@ -557,7 +578,7 @@ fun MultiContactSelectionDialog(
                             checked = selectedStates[index],
                             onCheckedChange = { selectedStates[index] = it }
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(contact.displayName.ifBlank { contact.contactId })
                     }
                 }
@@ -572,12 +593,12 @@ fun MultiContactSelectionDialog(
                     onConfirm(selectedContacts)
                 }
             }) {
-                Text(text = stringResource(R.string.find_match), color = MaterialTheme.colorScheme.background)
+                Text(text = context.getString(R.string.find_match), color = MaterialTheme.colorScheme.background)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.cancel), color = MaterialTheme.colorScheme.background)
+                Text(text = context.getString(R.string.cancel), color = MaterialTheme.colorScheme.background)
             }
         },
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -603,11 +624,15 @@ fun GenreSelectionDialog(
     onConfirm: (List<String>) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.select_genres_title)) },
+        title = { Text(context.getString(R.string.select_genres_title)) },
         text = {
-            Column {
+            Column(modifier = Modifier
+                .height(400.dp)
+                .verticalScroll(rememberScrollState())) {
                 // Genre checkboxes including "All"
                 allGenresWithAllOption.forEachIndexed { index, genre ->
                     Row(
@@ -641,7 +666,7 @@ fun GenreSelectionDialog(
                                 }
                             }
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(text = genre)
                     }
                 }
@@ -654,12 +679,12 @@ fun GenreSelectionDialog(
                     .filter { it != allOptionLabel }
                 onConfirm(selectedGenres)
             }) {
-                Text(text = stringResource(R.string.confirm), color = MaterialTheme.colorScheme.background)
+                Text(text = context.getString(R.string.confirm), color = MaterialTheme.colorScheme.background)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.cancel), color = MaterialTheme.colorScheme.background)
+                Text(text = context.getString(R.string.cancel), color = MaterialTheme.colorScheme.background)
             }
         },
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -673,15 +698,14 @@ fun GenreSelectionDialog(
 fun AnotherMovieImage() {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(vertical = 16.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         AsyncImage(
-            //model = "https://momenvy.co/wp-content/uploads/2017/07/movies-1-622x420.png",
-            model = "https://veganbookblogger.com/wp-content/uploads/2024/03/r-2.png?w=2048",
+            model = "https://momenvy.co/wp-content/uploads/2017/07/movies-1-622x420.png",
             contentDescription = null,
-            modifier = Modifier.width(250.dp)
+            modifier = Modifier.height(200.dp)
         )
     }
 }

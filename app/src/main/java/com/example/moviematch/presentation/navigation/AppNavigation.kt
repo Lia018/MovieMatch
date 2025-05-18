@@ -31,12 +31,14 @@ import com.example.moviematch.presentation.viewmodel.RegisterViewModel
  * for theme and language change events passed from the activity layer.
  *
  * @param isDarkTheme Boolean flag indicating if dark theme is active.
+ * @param currentLanguage Language code currently active ("sk", "en", etc.).
  * @param onLanguageChange Callback invoked when the user changes the language.
  * @param onThemeToggle Callback invoked when the user toggles the theme.
  */
 @Composable
 fun AppNavigation(
     isDarkTheme: Boolean,
+    currentLanguage: String,
     onLanguageChange: (String) -> Unit,
     onThemeToggle: () -> Unit
 ) {
@@ -45,6 +47,7 @@ fun AppNavigation(
         navController = navController,
         startDestination = "main",
         isDarkTheme = isDarkTheme,
+        currentLanguage = currentLanguage,
         onLanguageChange = onLanguageChange,
         onThemeToggle = onThemeToggle
     )
@@ -58,6 +61,7 @@ fun AppNavigation(
  * @param navController Controller that manages navigation between composable.
  * @param startDestination Route name of the initial screen to be shown.
  * @param isDarkTheme Boolean flag indicating the current theme.
+ * @param currentLanguage Language code currently active ("sk", "en", etc.).
  * @param onLanguageChange Callback invoked to update the app's language.
  * @param onThemeToggle Callback invoked to switch the app theme.
  */
@@ -66,6 +70,7 @@ fun AppNavGraph(
     navController: NavHostController,
     startDestination: String,
     isDarkTheme: Boolean,
+    currentLanguage: String,
     onLanguageChange: (String) -> Unit,
     onThemeToggle: () -> Unit
 ) {
@@ -75,6 +80,7 @@ fun AppNavGraph(
             MainScreen(
                 navController = navController,
                 isDarkTheme = isDarkTheme,
+                currentLanguage = currentLanguage,
                 onLanguageChange = onLanguageChange,
                 onThemeToggle = onThemeToggle
             )
@@ -133,6 +139,7 @@ fun AppNavGraph(
             EditProfileScreen(
                 userId = userId,
                 navController = navController,
+                currentLanguage = currentLanguage,
                 onThemeToggle = onThemeToggle,
                 onLanguageChange = onLanguageChange
             )

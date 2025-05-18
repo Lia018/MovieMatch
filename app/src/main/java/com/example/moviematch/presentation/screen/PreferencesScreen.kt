@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,13 +30,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -88,7 +89,7 @@ fun PreferencesScreen(userId: String, navController: NavController) {
             .systemBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Dropdown menu for selecting movie genre
         GenreDropdownMenu(
@@ -100,7 +101,16 @@ fun PreferencesScreen(userId: String, navController: NavController) {
         Spacer(modifier = Modifier.height(12.dp))
 
         // List of movies with checkboxes
+        val scrollStates = remember { mutableStateMapOf<String, LazyListState>() }
+
+        val listState = remember(selectedGenre) {
+            scrollStates.getOrPut(selectedGenre) {
+                LazyListState()
+            }
+        }
+
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .weight(1f)
                 .width(350.dp)
@@ -125,14 +135,15 @@ fun PreferencesScreen(userId: String, navController: NavController) {
                     )
                     Text(
                         text = movie,
-                        modifier = Modifier.padding(start = 8.dp),
+                        modifier = Modifier.padding(start = 12.dp),
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Button to save preferences
         Button(
@@ -141,13 +152,13 @@ fun PreferencesScreen(userId: String, navController: NavController) {
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                stringResource(R.string.save_preferences),
+                context.getString(R.string.save_preferences),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Button to return to the main menu
         Button(
@@ -156,13 +167,13 @@ fun PreferencesScreen(userId: String, navController: NavController) {
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                stringResource(R.string.back_to_menu),
+                context.getString(R.string.back_to_menu),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
     }
 }
 
@@ -180,6 +191,7 @@ fun GenreDropdownMenu(
     selectedGenre: String,
     onGenreSelected: (String) -> Unit
 ) {
+    val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
@@ -193,7 +205,7 @@ fun GenreDropdownMenu(
             readOnly = true,
             value = selectedGenre,
             onValueChange = {},
-            label = { Text(stringResource(R.string.genre)) },
+            label = { Text(context.getString(R.string.genre)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .menuAnchor()

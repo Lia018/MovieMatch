@@ -19,6 +19,7 @@ import android.content.Context
  */
 fun importMoviesFromCsv(context: Context): Map<String, List<String>> {
     // Open the CSV file from the assets directory
+    //https://gist.github.com/tiangechen/b68782efa49a16edaf07dc2cdaa855ea#file-movies-csv
     val inputStream = context.assets.open("movies.csv")
 
     // A mutable map to group movies by genre

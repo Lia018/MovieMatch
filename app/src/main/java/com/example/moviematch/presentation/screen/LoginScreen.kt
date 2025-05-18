@@ -37,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -96,13 +95,13 @@ fun LoginScreen(
 
     // UI states
     var isLoginAttemptedAutomatically by remember { mutableStateOf(false) }
-    var showPassword by remember { mutableStateOf(false) }
+    var showPassword by rememberSaveable { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
 
     // Dialog controls
     var showForgotDialog by rememberSaveable { mutableStateOf(false) }
     var showResetDialog by rememberSaveable { mutableStateOf(false) }
-    var showRememberDialog by remember { mutableStateOf(false) }
+    var showRememberDialog by rememberSaveable { mutableStateOf(false) }
     var showRememberOptions by rememberSaveable { mutableStateOf(false) }
 
     // Temporary storage for pending login
@@ -212,19 +211,19 @@ fun LoginScreen(
         OutlinedTextField(
             value = userId,
             onValueChange = { viewModel.onUserIdChange(it) },
-            label = { Text(stringResource(R.string.enter_id)) },
+            label = { Text(context.getString(R.string.enter_id)) },
             singleLine = true,
             modifier = Modifier.align(Alignment.CenterHorizontally).width(350.dp),
             colors = textFieldColors()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Password input field
         OutlinedTextField(
             value = password,
             onValueChange = { viewModel.onPasswordChange(it) },
-            label = { Text(stringResource(R.string.enter_password)) },
+            label = { Text(context.getString(R.string.enter_password)) },
             singleLine = true,
             visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -235,7 +234,7 @@ fun LoginScreen(
         // Show password checkbox
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.align(Alignment.CenterHorizontally).width(375.dp).padding(top = 8.dp)
+            modifier = Modifier.align(Alignment.CenterHorizontally).width(375.dp).padding(top = 12.dp)
         ) {
             Checkbox(
                 checked = showPassword,
@@ -247,7 +246,7 @@ fun LoginScreen(
                 )
             )
             Text(
-                text = stringResource(R.string.show_password),
+                text = context.getString(R.string.show_password),
                 color = MaterialTheme.colorScheme.onSecondary,
                 modifier = Modifier.clickable { showPassword = !showPassword }
             )
@@ -261,7 +260,7 @@ fun LoginScreen(
             modifier = Modifier.align(Alignment.CenterHorizontally).width(350.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(stringResource(R.string.login), color = MaterialTheme.colorScheme.onSecondary, fontSize = 18.sp)
+            Text(context.getString(R.string.login), color = MaterialTheme.colorScheme.onSecondary, fontSize = 18.sp)
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -271,7 +270,7 @@ fun LoginScreen(
             onClick = { showForgotDialog = true },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text(stringResource(R.string.forgot_password), color = MaterialTheme.colorScheme.onPrimary, fontSize = 14.sp)
+            Text(context.getString(R.string.forgot_password), color = MaterialTheme.colorScheme.onPrimary, fontSize = 14.sp)
         }
 
         // Navigate to registration
@@ -279,7 +278,7 @@ fun LoginScreen(
             onClick = { navController.navigate(NavRoute.Register.route) },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text(stringResource(R.string.create_account), color = MaterialTheme.colorScheme.onPrimary, fontSize = 14.sp)
+            Text(context.getString(R.string.create_account), color = MaterialTheme.colorScheme.onPrimary, fontSize = 14.sp)
         }
     }
 
@@ -311,8 +310,8 @@ fun LoginScreen(
     if (showRememberDialog && !suppressRememberDialog && pendingUserId != null && pendingPassword != null) {
         AlertDialog(
             onDismissRequest = { showRememberDialog = false },
-            title = { Text(stringResource(R.string.remember_login_title), color = MaterialTheme.colorScheme.onSecondary) },
-            text = { Text(stringResource(R.string.remember_login_msg), color = MaterialTheme.colorScheme.onSecondary) },
+            title = { Text(context.getString(R.string.remember_login_title), color = MaterialTheme.colorScheme.onSecondary) },
+            text = { Text(context.getString(R.string.remember_login_msg), color = MaterialTheme.colorScheme.onSecondary) },
             confirmButton = {
                 TextButton(onClick = {
                     prefs.edit {
@@ -324,7 +323,7 @@ fun LoginScreen(
                         popUpTo(NavRoute.Login.route) { inclusive = true }
                     }
                 }) {
-                    Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.background)
+                    Text(context.getString(R.string.yes), color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
@@ -332,7 +331,7 @@ fun LoginScreen(
                     showRememberDialog = false
                     showRememberOptions = true
                 }) {
-                    Text(stringResource(R.string.no), color = MaterialTheme.colorScheme.background)
+                    Text(context.getString(R.string.no), color = MaterialTheme.colorScheme.background)
                 }
             },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -343,8 +342,8 @@ fun LoginScreen(
     if (showRememberOptions) {
         AlertDialog(
             onDismissRequest = { showRememberOptions = false },
-            title = { Text(stringResource(R.string.remember_decision_title)) },
-            text = { Text(stringResource(R.string.remember_decision_msg)) },
+            title = { Text(context.getString(R.string.remember_decision_title)) },
+            text = { Text(context.getString(R.string.remember_decision_msg)) },
             confirmButton = {
                 TextButton(onClick = {
                     prefs.edit { putBoolean("suppressRememberDialog_${pendingUserId!!}", true) }
@@ -355,7 +354,7 @@ fun LoginScreen(
                         popUpTo(NavRoute.Login.route) { inclusive = true }
                     }
                 }) {
-                    Text(stringResource(R.string.do_not_ask_again), color = MaterialTheme.colorScheme.background)
+                    Text(context.getString(R.string.do_not_ask_again), color = MaterialTheme.colorScheme.background)
                 }
             },
             dismissButton = {
@@ -366,7 +365,7 @@ fun LoginScreen(
                         popUpTo(NavRoute.Login.route) { inclusive = true }
                     }
                 }) {
-                    Text(stringResource(R.string.think_about_it), color = MaterialTheme.colorScheme.background)
+                    Text(context.getString(R.string.think_about_it), color = MaterialTheme.colorScheme.background)
                 }
             },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -380,15 +379,16 @@ fun LoginScreen(
 @Composable
 fun ForgotPasswordDialog(onDismiss: () -> Unit, onSendCode: (String) -> Unit) {
     var username by rememberSaveable { mutableStateOf("") }
+    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = {},
-        title = { Text(text = stringResource(R.string.forgot_password_title), color = MaterialTheme.colorScheme.onSecondary) },
+        title = { Text(text = context.getString(R.string.forgot_password_title), color = MaterialTheme.colorScheme.onSecondary) },
         text = {
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = { Text(stringResource(R.string.forgot_username_label)) },
+                label = { Text(context.getString(R.string.forgot_username_label)) },
                 singleLine = true,
                 modifier = Modifier.width(350.dp),
                 colors = textFieldColors()
@@ -396,12 +396,12 @@ fun ForgotPasswordDialog(onDismiss: () -> Unit, onSendCode: (String) -> Unit) {
         },
         confirmButton = {
             TextButton(onClick = { onSendCode(username.trim()) }) {
-                Text(stringResource(R.string.send_code), color = MaterialTheme.colorScheme.background)
+                Text(context.getString(R.string.send_code), color = MaterialTheme.colorScheme.background)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.background)
+                Text(context.getString(R.string.cancel), color = MaterialTheme.colorScheme.background)
             }
         },
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -416,25 +416,26 @@ fun ResetPasswordDialog(onDismiss: () -> Unit, onConfirm: (String, String) -> Un
     var code by rememberSaveable { mutableStateOf("") }
     var newPassword by rememberSaveable { mutableStateOf("") }
     var showPassword by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = {},
-        title = { Text(stringResource(R.string.reset_password_title), color = MaterialTheme.colorScheme.onSecondary) },
+        title = { Text(context.getString(R.string.reset_password_title), color = MaterialTheme.colorScheme.onSecondary) },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 OutlinedTextField(
                     value = code,
                     onValueChange = { code = it },
-                    label = { Text(stringResource(R.string.verification_code)) },
+                    label = { Text(context.getString(R.string.verification_code)) },
                     singleLine = true,
                     modifier = Modifier.width(350.dp),
                     colors = textFieldColors()
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
-                    label = { Text(stringResource(R.string.new_password)) },
+                    label = { Text(context.getString(R.string.new_password)) },
                     singleLine = true,
                     visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier.width(350.dp),
@@ -442,7 +443,7 @@ fun ResetPasswordDialog(onDismiss: () -> Unit, onConfirm: (String, String) -> Un
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.align(Alignment.CenterHorizontally).width(375.dp).padding(top = 8.dp)
+                    modifier = Modifier.align(Alignment.CenterHorizontally).width(375.dp).padding(top = 12.dp)
                 ) {
                     Checkbox(
                         checked = showPassword,
@@ -454,7 +455,7 @@ fun ResetPasswordDialog(onDismiss: () -> Unit, onConfirm: (String, String) -> Un
                         )
                     )
                     Text(
-                        text = stringResource(R.string.show_password),
+                        text = context.getString(R.string.show_password),
                         color = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier.clickable { showPassword = !showPassword }
                     )
@@ -463,12 +464,12 @@ fun ResetPasswordDialog(onDismiss: () -> Unit, onConfirm: (String, String) -> Un
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(code.trim(), newPassword.trim()) }) {
-                Text(stringResource(R.string.confirm), color = MaterialTheme.colorScheme.background)
+                Text(context.getString(R.string.confirm), color = MaterialTheme.colorScheme.background)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.background)
+                Text(context.getString(R.string.cancel), color = MaterialTheme.colorScheme.background)
             }
         }
     )

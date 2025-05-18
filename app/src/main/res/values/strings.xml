@@ -5,6 +5,7 @@
     <string name="register">Registrovať</string>
     <string name="language_sk">🇸🇰 Slovenčina</string>
     <string name="language_en">🇬🇧 Angličtina</string>
+    <string name="language_already_set">Tento jazyk už je nastavený</string>
     //register
     <string name="enter_name">Zadajte meno</string>
     <string name="enter_password">Zadajte heslo</string>

@@ -5,6 +5,7 @@
     <string name="register">Register</string>
     <string name="language_sk">🇸🇰 Slovak</string>
     <string name="language_en">🇬🇧 English</string>
+    <string name="language_already_set">This language is already selected</string>
     //register
     <string name="enter_name">Enter name</string>
     <string name="enter_password">Enter password</string>
@@ -119,7 +120,7 @@
     <string name="other_user_no_preferences_named">User %1$s has no movies in preferences</string>
     <string name="no_contacts_have_preferences">None of the selected contacts have movie preferences</string>
     <string name="no_group_match">No group match found</string>
-    <string name="genre_feeling_prompt">What genre are you in the mood for today?</string>
+    <string name="genre_feeling_prompt">What genre are you in the mood for?</string>
     <string name="no_genre_match">No matches in the selected genres</string>
     <string name="select_genres_title">Select genres</string>
     <string name="no_genres_selected">No genres selected</string>

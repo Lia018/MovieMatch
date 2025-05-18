@@ -54,6 +54,7 @@ class MainActivity : ComponentActivity() {
                     // Set up the main navigation graph and pass handlers for theme/language changes
                     AppNavigation(
                         isDarkTheme = theme == "dark",
+                        currentLanguage = language,
                         onLanguageChange = {
                             language = it
                             prefs.edit { putString("lang", it) }
